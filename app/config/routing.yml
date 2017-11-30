@@ -1,0 +1,9 @@
+
+sonata:
+    resource: routing/sonata.yml
+    prefix: /
+
+app:
+    resource: '@AppBundle/Controller/'
+    type: annotation
+
