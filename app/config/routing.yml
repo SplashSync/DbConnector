@@ -1,6 +1,14 @@
+web_site:
+    resource: "@WebSiteBundle/Resources/config/routing.yml"
+    prefix:   /
+
 
 sonata:
     resource: routing/sonata.yml
+    prefix: /
+
+splash:
+    resource: routing/splash.yml
     prefix: /
 
 app:

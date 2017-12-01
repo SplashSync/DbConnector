@@ -27,7 +27,7 @@ sonata_block:
         
 # Sonata Admin        
 sonata_admin:
-    title:      Splash DbDirect
+    title:      Splash Db Connector
     title_logo: img/Splash-Logo_Ico.png
 #    templates:
 #        show:       AppBundle:Admin:Display_Client.html.twig        
@@ -37,6 +37,26 @@ sonata_admin:
     security:
         role_admin:                     ROLE_USER
         
+    dashboard:
+        groups:
+            
+            sonata.admin.group.websites:
+                label:           Websites
+                label_catalogue: WebSiteBundle
+                icon:            '<i class="fa fa-server"></i>'
+                items:
+                    - splash.website.admin.site
+                    - splash.website.admin.commits
+            
+            
+            sonata.admin.group.administration:
+                label:           sonata_administration
+                label_catalogue: SonataAdminBundle
+                icon:            '<i class="fa fa-cogs"></i>'
+                items:
+                    - sonata.user.admin.user
+#                    - sonata.user.admin.group                    
+                    
     templates:
         layout:                         SonataAdminBundle::standard_layout.html.twig
         ajax:                           SonataAdminBundle::ajax_layout.html.twig

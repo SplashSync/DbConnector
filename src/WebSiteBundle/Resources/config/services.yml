@@ -1,0 +1,25 @@
+services:
+
+    ################################################################################
+    # SPLASH WebSite Bundle Site Sonata Admin Service
+    splash.website.admin.site:
+        class: WebSiteBundle\Admin\SiteAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Websites", label: "Sites" }
+        arguments:
+            - ~
+            - WebSiteBundle\Entity\Site
+            - ~
+#        calls:
+#            - [ setTranslationDomain, [NodesBundle]]
+
+    ################################################################################
+    # SPLASH WebSite Bundle Commits Sonata Admin Service
+    splash.website.admin.commits:
+        class: WebSiteBundle\Admin\CommitsAdmin
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: "Websites", label: "Commits" }
+        arguments:
+            - ~
+            - WebSiteBundle\Entity\Commits
+            - ~

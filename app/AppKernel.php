@@ -21,6 +21,8 @@ class AppKernel extends Kernel
         $this->registerFosBundles($bundles);
         $this->registerSonataAdminBundles($bundles);
         
+        $this->registerSplashCoreBundles($bundles);
+        
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
@@ -57,6 +59,19 @@ class AppKernel extends Kernel
             $bundles[] = new Sonata\AdminBundle\SonataAdminBundle();
             $bundles[] = new Sonata\DoctrineORMAdminBundle\SonataDoctrineORMAdminBundle();
                     
+    }
+    
+    public function registerSplashCoreBundles(&$bundles)
+    {
+        // Splash Core WebService Bundle >> Communication
+        $bundles[] = new Splash\Bundle\SplashBundle();
+        
+        // Splash tasking Bundle >> Changes monitoring
+        $bundles[] = new Splash\Tasking\SplashTaskingBundle();
+        
+        // Local Sites Manager
+        $bundles[] = new WebSiteBundle\WebSiteBundle();
+        
     }
     
     public function getRootDir()
