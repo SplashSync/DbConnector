@@ -7,6 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use WebSiteBundle\Traits\SiteDatabaseTrait;
 use WebSiteBundle\Traits\SiteInformationsTrait;
 use WebSiteBundle\Traits\EntityLifeCycleTrait;
+use WebSiteBundle\Traits\SiteAccountingTrait;
 
 /**
  * Site
@@ -18,6 +19,7 @@ use WebSiteBundle\Traits\EntityLifeCycleTrait;
  */
 class Site
 {
+    use SiteAccountingTrait;
     use SiteInformationsTrait;
     use SiteDatabaseTrait;
     use EntityLifeCycleTrait;
@@ -139,4 +141,6 @@ class Site
     {
         return $this->enabled;
     }
+
+
 }

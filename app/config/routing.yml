@@ -1,6 +1,6 @@
-web_site:
-    resource: "@WebSiteBundle/Resources/config/routing.yml"
-    prefix:   /
+#web_site:
+#    resource: "@WebSiteBundle/Resources/config/routing.yml"
+#    prefix:   /
 
 
 sonata:

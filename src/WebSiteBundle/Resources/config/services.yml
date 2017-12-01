@@ -9,8 +9,10 @@ services:
         arguments:
             - ~
             - WebSiteBundle\Entity\Site
-            - ~
-#        calls:
+            - WebSiteBundle:SiteCRUD
+        calls:
+            - [ setTemplate, [show, WebSiteBundle:CRUD/Site:view.html.twig]]
+            
 #            - [ setTranslationDomain, [NodesBundle]]
 
     ################################################################################

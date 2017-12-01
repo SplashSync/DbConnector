@@ -41,10 +41,23 @@ class SiteAdmin extends Admin
     protected function configureListFields(ListMapper $listMapper)
     {
         $listMapper
-            ->addIdentifier('siteName')
+                
+            ->addIdentifier('siteName', null, [ 'route' => [ 'name' => 'show' ] ])
             ->add('enabled', null, array('editable' => true))
             ->add('databaseHost')
-            ->add('updatedAt')                
+            ->add('updatedAt') 
+                
+            ->add('_action', null, array(
+                'actions' => array(
+
+                    // ...
+
+                    'clone' => array(
+                        'template' => 'WebSiteBundle:CRUD/Site:list__actions.html.twig'
+                    )
+                )
+            ))
+                
         ;
     }
 
@@ -67,45 +80,46 @@ class SiteAdmin extends Admin
     protected function configureFormFields(FormMapper $formMapper)
     {
         $formMapper
-            ->with('General', array('class' => 'col-md-6'))
-                ->add('siteName')
-                ->add('enabled')
-                ->add('shortDescription')
-                ->add('longDescription')
+            ->tab('General') 
+                ->with('General', array('class' => 'col-md-6'))
+                    ->add('siteName')
+                    ->add('enabled')
+                    ->add('shortDescription')
+                    ->add('longDescription')
+                ->end()  
+                ->with('Security', array('class' => 'col-md-6'))
+                    ->add('accountId')
+                    ->add('accountKey')
+                ->end()                 
+                ->with('Database', array('class' => 'col-md-6'))
+//                    ->add('databaseHost')
+//                    ->add('databasePort')
+                    ->add('databaseName')
+//                    ->add('databaseUser')
+//                    ->add('databasePassword')
+                ->end()
             ->end()
-             
-            ->with('Database', array('class' => 'col-md-6'))
-                ->add('databaseHost')
-                ->add('databasePort')
-                ->add('databaseName')
-                ->add('databaseUser')
-                ->add('databasePassword')
+            ->tab('Informations') 
+                ->with('Company Informations', array('class' => 'col-md-6'))
+                    ->add('company')
+                    ->add('email')
+                    ->add('publicUrl')
+                    ->add('phone')
+                ->end()      
+                ->with('Address Informations', array('class' => 'col-md-6'))
+                    ->add('address')
+                    ->add('town')
+                    ->add('zip')
+                    ->add('country')
+                ->end()                  
             ->end()
-            ->with('Company Informations', array('class' => 'col-md-6'))
-                ->add('company')
-                ->add('email')
-                ->add('publicUrl')
-                ->add('phone')
-            ->end()      
-            ->with('Address Informations', array('class' => 'col-md-6'))
-                ->add('address')
-                ->add('town')
-                ->add('zip')
-                ->add('country')
-            ->end()                  
-//            ->with('Encoding', array('class' => 'col-md-6'))
-//                ->add('crypt_mode')
-//                ->add('crypt_key')
-//            ->end()                
-//            ->with('inspections', array('class' => 'col-md-12'))
-//                ->add('inspections', 'sonata_type_collection', array(
-//                    'by_reference'       => false,
-//                    'cascade_validation' => true,
-//                ), array(
-//                    'edit' => 'inline',
-//                    'inline' => 'table'
-//                ))
+            ->tab('Advanced') 
+                ->with('Expert Mode', array('class' => 'col-md-6'))
+                    ->add('expertMode')
+                    ->add('accountHost')
+                ->end()      
             ->end()
+
         ;
     }
 
