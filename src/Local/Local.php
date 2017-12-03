@@ -78,6 +78,8 @@ class Local extends BaseLocalClass
         $Parameters       =     array();
 
         if (is_null($this->site)) {
+            $Parameters["WsIdentifier"]         =   "NoUse";
+            $Parameters["WsEncryptionKey"]      =   "NoUse";
             return $Parameters;
         } 
         
@@ -294,8 +296,19 @@ class Local extends BaseLocalClass
         //====================================================================//
         //  Store Container
         $this->container    =   $container;
+        //====================================================================//
+        //  No WebSite Given
         if ( is_null($WebSite) ) {
-            return;
+            
+            //====================================================================//
+            //  During Tests
+            if ( $container->getParameter("kernel.environment") == 'test' ) {
+//                $Websites   =   $this->container->get("doctrine")->getRepository("WebSiteBundle:Site")->findByEnabled(1);
+                $Websites   =   $this->container->get("doctrine")->getRepository("WebSiteBundle:Site")->findByEnabled(1);
+                $WebSite    =   array_shift($Websites);
+            } else {
+                return;
+            }
         } 
         //====================================================================//
         //  Store Current WebSite
