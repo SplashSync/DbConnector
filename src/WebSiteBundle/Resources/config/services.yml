@@ -1,6 +1,14 @@
 services:
 
     ################################################################################
+    # SPLASH WebSites manager Service
+    splash.website.manager:
+        class: WebSiteBundle\Services\WebSiteManager
+        arguments:
+            - '@doctrine.orm.website_entity_manager'
+            - '@event_dispatcher'
+            
+    ################################################################################
     # SPLASH WebSite Bundle Site Sonata Admin Service
     splash.website.admin.site:
         class: WebSiteBundle\Admin\SiteAdmin
@@ -11,7 +19,8 @@ services:
             - WebSiteBundle\Entity\Site
             - WebSiteBundle:SiteCRUD
         calls:
-            - [ setTemplate, [show, WebSiteBundle:CRUD/Site:view.html.twig]]
+            - [ setTemplate,        [ show, WebSiteBundle:CRUD/Site:view.html.twig]]
+            - [ setWebSitemanager,  [ '@splash.website.manager'] ]
             
 #            - [ setTranslationDomain, [NodesBundle]]
 

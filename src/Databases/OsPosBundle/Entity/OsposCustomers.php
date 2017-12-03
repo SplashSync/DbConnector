@@ -3,19 +3,45 @@
 namespace Databases\OsPosBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Splash\Bundle\Annotation as SPL;
+
+use Databases\OsPosBundle\Entity\ThirdParty\PeopleRedirectionTrait;
 
 /**
  * OsposCustomers
  *
  * @ORM\Table(name="ospos_customers", uniqueConstraints={@ORM\UniqueConstraint(name="account_number", columns={"account_number"})}, indexes={@ORM\Index(name="person_id", columns={"person_id"}), @ORM\Index(name="package_id", columns={"package_id"})})
  * @ORM\Entity
+ * 
+ * @author B. Paquier <contact@splashsync.com>
+ * @SPL\Object( type                    =   "ThirdParty",
+ *              disabled                =   false,
+ *              name                    =   "Customer",
+ *              description             =   "OsPos Customer Object",
+ *              icon                    =   "fa fa-user",
+ *              enable_push_created     =    false,
+ *              target                  =   "Databases\OsPosBundle\Entity\OsposCustomers"
+ * )
+ * 
  */
 class OsposCustomers
 {
+    use PeopleRedirectionTrait;
+    
     /**
      * @var string
      *
      * @ORM\Column(name="company_name", type="string", length=255, nullable=true)
+     * 
+     * @SPL\Field(  
+     *          id      =   "companyName",
+     *          type    =   "varchar",
+     *          name    =   "User Id",
+     *          itemtype=   "http://schema.org/Organization", itemprop="legalName",
+     *          write   =   false,
+     *          inlist  =   true,
+     * )
+     *  
      */
     private $companyName;
 
@@ -83,8 +109,30 @@ class OsposCustomers
      */
     private $package;
 
+    //====================================================================//
+    // Customer Construct Function
+    //====================================================================//
 
 
+    
+    //====================================================================//
+    // Splash Specific Getters & Setters
+    //====================================================================//
+
+    /**
+     * get Object Id
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->getPerson()->getPersonId();
+    }
+    
+    //====================================================================//
+    // Simple Getters & Setters
+    //====================================================================//
+    
     /**
      * Set companyName
      *

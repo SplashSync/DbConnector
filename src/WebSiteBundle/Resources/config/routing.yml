@@ -7,3 +7,22 @@ splash_website_soap:
     path:     /{SiteId}/soap
     defaults:
         _controller: WebSiteBundle:SOAP:main
+
+################################################################################
+# SPLASH WEBSITES DEV ROUTES
+################################################################################
+
+splash_website_debug:
+    path:     /{SiteId}/debug
+    defaults:
+        _controller: WebSiteBundle:DEV:debug
+        
+splash_website_debug_filtered:
+    path:     /{SiteId}/debug/{Type}
+    defaults:
+        _controller: WebSiteBundle:DEV:debug
+        
+splash_website_debug_view:
+    path:     /{SiteId}/debug/{Type}/{ObjectId}
+    defaults:
+        _controller: WebSiteBundle:DEV:debug

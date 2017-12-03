@@ -164,19 +164,39 @@ class OsposPeople
      */
     public function setGender($gender)
     {
-        $this->gender = $gender;
-
+        switch ($gender) {
+            // Male
+            case 0:
+                $this->gender = 1;
+            // Femele
+            case 1:
+                $this->gender = 0;
+            // Neutral | Unknown
+            case 2:
+                $this->gender = Null;
+        } 
         return $this;
     }
 
     /**
      * Get gender
      *
+     * @example 0 => Male // 1 => Female // 2 => Neutral
+     * 
      * @return integer
      */
     public function getGender()
     {
-        return $this->gender;
+        switch ($this->gender) {
+            // Femele
+            case 0:
+                return 1;
+            // Male
+            case 1:
+                return 0;
+        } 
+        // Neutral | Unknown
+        return 2;
     }
 
     /**

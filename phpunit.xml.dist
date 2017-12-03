@@ -1,31 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- https://phpunit.de/manual/current/en/appendixes.configuration.html -->
-<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/4.8/phpunit.xsd"
-         backupGlobals="false"
-         colors="true"
-         bootstrap="vendor/autoload.php"
+<!-- http://www.phpunit.de/manual/current/en/appendixes.configuration.html -->
+<phpunit
+    backupGlobals               = "false"
+    backupStaticAttributes      = "false"
+    colors                      = "true"
+    convertErrorsToExceptions   = "true"
+    convertNoticesToExceptions  = "true"
+    convertWarningsToExceptions = "true"
+    processIsolation            = "true"
+    stopOnFailure               = "true"
+    syntaxCheck                 = "false"
+    bootstrap                   = "vendor/autoload.php" 
+    verbose                     = "false"
+    debug                       = "false"    
+    timeoutForLargeTests        = "120"  
 >
-    <php>
-        <ini name="error_reporting" value="-1" />
-        <server name="KERNEL_CLASS" value="AppKernel" />
-    </php>
 
     <testsuites>
-        <testsuite name="Project Test Suite">
-            <directory>tests</directory>
+        <testsuite name="All">
+            <directory>Tests/*</directory>
+            <directory>vendor/splash/php-bundle/Tests/*</directory>
         </testsuite>
     </testsuites>
 
     <filter>
         <whitelist>
-            <directory>src</directory>
+            <directory>Tests</directory>
+            <directory>vendor/splash/php-bundle</directory>
             <exclude>
-                <directory>src/*Bundle/Resources</directory>
-                <directory>src/*/*Bundle/Resources</directory>
-                <directory>src/*/Bundle/*Bundle/Resources</directory>
+                <directory>vendor</directory>
+                <directory>endor/splash/phpcore</directory>
             </exclude>
         </whitelist>
     </filter>
+
+    <php>
+        <server name="KERNEL_DIR" value="app" />
+        <env    name="SYMFONY_DEPRECATION_HELPER" value="disabled" />
+        <server name="SERVER_NAME" value="http://localhost:8000/app.php"/>        
+        <const  name="SPLASH_DEBUG" value="true" />
+    </php>
+    
 </phpunit>

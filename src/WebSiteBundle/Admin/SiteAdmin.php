@@ -17,11 +17,23 @@ use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 
+use WebSiteBundle\Services\WebSiteManager;
+
 /**
  * @author Splash Sync <contact@splashsync.com>
  */
 class SiteAdmin extends Admin
 {
+    /**
+     * @var WebSiteManager
+     */
+    private $WebSiteManager;
+    
+    public function setWebSitemanager(WebSiteManager $Manager){
+        $this->WebSiteManager   =   $Manager;
+    }
+
+
     /**
      * {@inheritdoc}
      */
@@ -83,6 +95,9 @@ class SiteAdmin extends Admin
             ->tab('General') 
                 ->with('General', array('class' => 'col-md-6'))
                     ->add('siteName')
+                    ->add('serverType', 'choice', array(
+                        'choices' => $this->WebSiteManager->getAvalaibeDatabasesChoiceArray(),
+                    ))                
                     ->add('enabled')
                     ->add('shortDescription')
                     ->add('longDescription')

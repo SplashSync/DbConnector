@@ -1,6 +1,6 @@
 <?php
 /*
- * Copyright (C) 2011-2018  Bernard Paquier       <bernard.paquier@gmail.com>
+ * Copyright (C) 2011-2018  Splash Sync       <contact@splashsync.com>
  * 
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,9 @@ use Splash\Core\SplashCore          as Splash;
 use WebSiteBundle\Entity\Site;
 
 use Splash\Bundle\Models\BaseLocalClass;
+use Splash\Local\Objects\Annotations;
+
+use Splash\Local\Widgets\Annotations    as  WidgetAnnotations;
 
 //====================================================================//
 //  CONSTANTS DEFINITION
@@ -194,6 +197,68 @@ class Local extends BaseLocalClass
         return $Response;
     }    
     
+    /**
+     *      @abstract       Return Local Server Test Sequences as Aarray
+     *                      
+     *      THIS FUNCTION IS OPTIONNAL - USE IT ONLY IF REQUIRED
+     * 
+     *      This function called on each initialization of module's tests sequences.
+     *      It's aim is to list different configurations for testing on local system.
+     * 
+     *      If Name = List, Result must be an array including list of Sequences Names.
+     * 
+     *      If Name = ASequenceName, Function will Setup Sequence on Local System.
+     * 
+     *      @return         array       $Sequences
+     */    
+    public static function TestSequences($Name = Null)
+    {
+////        static::bootKernel();
+////        $KernelClass    =   \Splash\Bundle\Tests\Core\C01ClassesTest::getKernelClass();
+////        
+////        $Kernel new static::$class(
+////            isset($options['environment']) ? $options['environment'] : 'test',
+////            isset($options['debug']) ? $options['debug'] : true
+////        );
+//        
+////        $WebSites = static::$kernel->getContainer()->get('doctrine');
+////        ->get('doctrine')->getRepository('WebSiteBundle:Site')->findAll();
+//        
+////        $WebSites = static::$kernel->getContainer()->get('doctrine')->getRepository('WebSiteBundle:Site')->findAll();
+//        
+////echo count($WebSites);
+//echo 'SEQUENCES';
+
+        foreach ($WebSites  as $WebSite) {
+            echo $WebSite->getName();
+        }                
+
+        switch($Name) {
+            
+            case "ProductVATIncluded":
+                update_option("woocommerce_prices_include_tax", "yes");
+                update_option("splash_multilang", "on");
+                return;
+                
+            case "Monolangual":
+                update_option("woocommerce_prices_include_tax", "no");
+                update_option("splash_multilang", "off");
+                return;
+            
+            case "Multilangual":
+                update_option("woocommerce_prices_include_tax", "no");
+                update_option("splash_multilang", "on");
+                return;
+            
+            case "List":
+                
+
+
+                return array( "ProductVATIncluded" ,"Monolangual", "Multilangual" );
+                
+        }
+    }  
+    
 //====================================================================//
 // *******************************************************************//
 //  OVERRIDING CORE MODULE LOCAL FUNCTIONS
@@ -229,6 +294,9 @@ class Local extends BaseLocalClass
         //====================================================================//
         //  Store Container
         $this->container    =   $container;
+        if ( is_null($WebSite) ) {
+            return;
+        } 
         //====================================================================//
         //  Store Current WebSite
         $this->site         =   $WebSite;
@@ -239,6 +307,16 @@ class Local extends BaseLocalClass
         //  Unset Splash Configuration => Will be reloaded uppon next request
         unset(Splash::Core()->conf);
         unset(Splash::Core()->log);
+        
+        //====================================================================//
+        // Setup Annotations Manager
+        $WebSiteManager     =    $container->get('splash.website.manager');
+        $this->_am = new Annotations(
+                $WebSiteManager->getEntityManager($WebSite),
+                Null,
+                $WebSiteManager->getObjects($WebSite)
+            );        
+        
     }
     
 }

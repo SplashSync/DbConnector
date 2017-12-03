@@ -43,6 +43,13 @@ class Site
     /**
      * @var string
      *
+     * @ORM\Column(name="ServerType", type="string", length=255)
+     */
+    private $serverType;
+    
+    /**
+     * @var string
+     *
      * @ORM\Column(name="Enabled", type="boolean")
      */
     private $enabled = True;

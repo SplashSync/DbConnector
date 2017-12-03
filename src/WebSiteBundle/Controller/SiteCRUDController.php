@@ -40,12 +40,9 @@ class SiteCRUDController extends Controller
         // Splash Show Actions        
         //====================================================================//
 
-
         //====================================================================//
         // Boot Local Splash Module
         Splash::Local()->Boot($this->container, $Site);
-//dump(Splash::Local());
-//dump(Splash::Core()->Configuration());
 
         $Results = array();
         
@@ -66,17 +63,19 @@ class SiteCRUDController extends Controller
         // Execute Splash Connect Test
         $Results['connect'] = Splash::Connect();
         $ConnectTest_Log = Splash::Log()->GetHtmlLog(True);
-        
+       
+$this->get('splash.website.manager')->getAvalaibeDatabases();
+
 //==============================================================================
 // Create Document Manager 
-$Em = \Doctrine\ORM\EntityManager::create( 
-        $Site->getDatabaseConfiguration($this->getDoctrine()->getConnection()), 
-        $this->getDoctrine()->getManager()->getConfiguration() 
-        );
+//$Em = $this->get('splash.website.manager')->getEntityManager( $Site );
 //                $this->defaultDocumentManager->getConnection(), $configuration, $this->defaultDocumentManager->getEventManager()
 //);
 //dump($Em->getRepository("OsPosBundle:OsposPeople")->findAll());
 
+dump(Splash::Object('ThirdParty'));
+//dump( $this->get('splash.website.manager')->getEntityManager( $Site ) );
+        
         return $this->renderWithExtraParams($this->admin->getTemplate('show'), [
             'action' => 'show',
             'object' => $Site,

@@ -1,4 +1,14 @@
 services:
-#    os_pos.example:
-#        class: Databases\OsPosBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
+    
+    ################################################################################
+    # SPLASH OsPos Bundle Database Service
+    splash.databases.ospos:
+        class: Databases\OsPosBundle\Services\DatabaseManager
+        tags:
+            - { name: kernel.event_listener,    event: splash.databases.list,   method: onDatabaseListAction }
+#        arguments:
+#            - ~
+#            - WebSiteBundle\Entity\Commits
+#            - ~
+            
+            
