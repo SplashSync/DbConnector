@@ -26,5 +26,14 @@ doctrine:
                     
             default:
                 connection: default
-                auto_mapping: true
-                mappings: ~  
+                auto_mapping: false
+                mappings: 
+                    ApplicationSonataUserBundle: ~
+                    SplashTaskingBundle: ~
+                    WebSiteBundle: ~
+                    
+            website:
+                connection: default
+                auto_mapping: false
+                mappings: 
+                    OsPosBundle: ~                    

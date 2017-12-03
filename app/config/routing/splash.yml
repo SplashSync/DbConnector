@@ -1,4 +1,4 @@
 
 splash_ws:
-    resource: "@SplashBundle/Resources/config/routing.yml"
+    resource: "@WebSiteBundle/Resources/config/routing.yml"
     prefix: /ws
