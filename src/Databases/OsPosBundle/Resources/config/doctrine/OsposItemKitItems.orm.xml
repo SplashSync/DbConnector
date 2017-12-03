@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="Databases\OsPosBundle\Entity\OsposItemKitItems" table="ospos_item_kit_items">
+    <indexes>
+      <index name="ospos_item_kit_items_ibfk_2" columns="item_id"/>
+      <index name="IDX_3F5F63C3BC771520" columns="item_kit_id"/>
+    </indexes>
+    <id name="quantity" type="decimal" column="quantity"/>
+    <id name="itemKit" association-key="true"/>
+    <id name="item" association-key="true"/>
+    <field name="kitSequence" type="integer" column="kit_sequence" nullable="false">
+      <options>
+        <option name="unsigned"/>
+        <option name="default">0</option>
+      </options>
+    </field>
+    <one-to-one field="itemKit" target-entity="OsposItemKits" fetch="LAZY">
+      <join-columns>
+        <join-column name="item_kit_id" referenced-column-name="item_kit_id"/>
+      </join-columns>
+    </one-to-one>
+    <one-to-one field="item" target-entity="OsposItems" fetch="LAZY">
+      <join-columns>
+        <join-column name="item_id" referenced-column-name="item_id"/>
+      </join-columns>
+    </one-to-one>
+  </entity>
+</doctrine-mapping>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="Databases\OsPosBundle\Entity\OsposCustomersPoints" table="ospos_customers_points">
+    <indexes>
+      <index name="person_id" columns="person_id"/>
+      <index name="package_id" columns="package_id"/>
+      <index name="sale_id" columns="sale_id"/>
+    </indexes>
+    <id name="id" type="integer" column="id">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="pointsEarned" type="integer" column="points_earned" nullable="false">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <many-to-one field="person" target-entity="OsposCustomers" fetch="LAZY">
+      <join-columns>
+        <join-column name="person_id" referenced-column-name="person_id"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="package" target-entity="OsposCustomersPackages" fetch="LAZY">
+      <join-columns>
+        <join-column name="package_id" referenced-column-name="package_id"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="sale" target-entity="OsposSales" fetch="LAZY">
+      <join-columns>
+        <join-column name="sale_id" referenced-column-name="sale_id"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>

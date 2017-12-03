@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="Databases\OsPosBundle\Entity\OsposSales" table="ospos_sales">
+    <indexes>
+      <index name="customer_id" columns="customer_id"/>
+      <index name="employee_id" columns="employee_id"/>
+      <index name="sale_time" columns="sale_time"/>
+      <index name="dinner_table_id" columns="dinner_table_id"/>
+    </indexes>
+    <unique-constraints>
+      <unique-constraint name="invoice_number" columns="invoice_number"/>
+    </unique-constraints>
+    <id name="saleId" type="integer" column="sale_id">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="saleTime" type="datetime" column="sale_time" nullable="false">
+      <options>
+        <option name="default">CURRENT_TIMESTAMP</option>
+      </options>
+    </field>
+    <field name="comment" type="text" column="comment" length="65535" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="invoiceNumber" type="string" column="invoice_number" length="32" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="quoteNumber" type="string" column="quote_number" length="32" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="saleStatus" type="boolean" column="sale_status" nullable="false">
+      <options>
+        <option name="default">0</option>
+      </options>
+    </field>
+    <many-to-one field="employee" target-entity="OsposEmployees" fetch="LAZY">
+      <join-columns>
+        <join-column name="employee_id" referenced-column-name="person_id"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="customer" target-entity="OsposCustomers" fetch="LAZY">
+      <join-columns>
+        <join-column name="customer_id" referenced-column-name="person_id"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="dinnerTable" target-entity="OsposDinnerTables" fetch="LAZY">
+      <join-columns>
+        <join-column name="dinner_table_id" referenced-column-name="dinner_table_id"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>

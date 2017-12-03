@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="Databases\OsPosBundle\Entity\OsposModules" table="ospos_modules">
+    <unique-constraints>
+      <unique-constraint name="desc_lang_key" columns="desc_lang_key"/>
+      <unique-constraint name="name_lang_key" columns="name_lang_key"/>
+    </unique-constraints>
+    <id name="moduleId" type="string" column="module_id" length="255">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="nameLangKey" type="string" column="name_lang_key" length="255" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="descLangKey" type="string" column="desc_lang_key" length="255" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="sort" type="integer" column="sort" nullable="false">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+  </entity>
+</doctrine-mapping>

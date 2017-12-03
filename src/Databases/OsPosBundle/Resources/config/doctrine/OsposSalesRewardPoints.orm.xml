@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="Databases\OsPosBundle\Entity\OsposSalesRewardPoints" table="ospos_sales_reward_points">
+    <indexes>
+      <index name="sale_id" columns="sale_id"/>
+    </indexes>
+    <id name="id" type="integer" column="id">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="earned" type="float" column="earned" precision="10" scale="0" nullable="false"/>
+    <field name="used" type="float" column="used" precision="10" scale="0" nullable="false"/>
+    <many-to-one field="sale" target-entity="OsposSales" fetch="LAZY">
+      <join-columns>
+        <join-column name="sale_id" referenced-column-name="sale_id"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="Databases\OsPosBundle\Entity\OsposTaxCodeRates" table="ospos_tax_code_rates">
+    <id name="rateTaxCode" type="string" column="rate_tax_code" length="32"/>
+    <id name="rateTaxCategoryId" type="integer" column="rate_tax_category_id"/>
+    <field name="taxRate" type="decimal" column="tax_rate" precision="15" scale="4" nullable="false">
+      <options>
+        <option name="default">0.0000</option>
+      </options>
+    </field>
+    <field name="roundingCode" type="boolean" column="rounding_code" nullable="false">
+      <options>
+        <option name="default">0</option>
+      </options>
+    </field>
+  </entity>
+</doctrine-mapping>

@@ -49,13 +49,13 @@ class Site
 
     
     public function __construct() {
-        $this->setDatabaseType('MySql');
+        $this->setDatabaseType('pdo_mysql');
         $this->setServerType('OsCommerce_2rc3');
     }
 
     
     public function __toString() {
-        return $this->getSiteName();
+        return $this->getSiteName() ? $this->getSiteName() : "";
     }
 
     

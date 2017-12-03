@@ -1,0 +1,3 @@
+os_pos_homepage:
+    path:     /
+    defaults: { _controller: OsPosBundle:Default:index }

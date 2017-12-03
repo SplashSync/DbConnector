@@ -3,6 +3,7 @@
 namespace WebSiteBundle\Traits;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\DBAL\Connection;
 
 //
 // DROP TRIGGER IF EXISTS `update`;
@@ -30,7 +31,7 @@ trait SiteDatabaseTrait
     /**
      * @var string
      *
-     * @ORM\Column(name="DatabaseHost", type="string", length=255)
+     * @ORM\Column(name="DatabaseHost", type="string", length=255, nullable=true)
      */
     private $databaseHost;
 
@@ -62,6 +63,34 @@ trait SiteDatabaseTrait
      */
     private $databasePassword;
 
+    /**
+     * Get Database Configuration Array
+     * 
+     * @param Connection    $Connection         Current Database Connection
+     * 
+     * @return Site
+     */
+    public function getDatabaseConfiguration($Connection)
+    {
+        //==============================================================================
+        // No Host Defined => Use Current Host & Config 
+        if( empty($this->getDatabaseHost()) ) {
+            $Params             =   $Connection->getParams();
+            $Params['dbname']   =   $this->getDatabaseName();
+            return $Params;
+        }
+        //==============================================================================
+        // Host Defined => Use Custom Host & Config 
+        return array(
+            'driver'    => 'pdo_mysql',
+            'host'      => $this->getDatabaseHost(),
+            'port'      => (!empty($this->databasePort) ? $this->databasePort : '3306'),
+            'dbname'    => $this->getDatabaseName(),
+            'user'      => $this->getDatabaseUser(),
+            'password'  => $this->getDatabasePassword()
+        );
+    }    
+    
     /**
      * Set databaseType
      *

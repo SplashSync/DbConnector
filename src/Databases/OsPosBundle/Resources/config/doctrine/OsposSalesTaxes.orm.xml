@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="Databases\OsPosBundle\Entity\OsposSalesTaxes" table="ospos_sales_taxes">
+    <indexes>
+      <index name="print_sequence" columns="sale_id,print_sequence,tax_type,tax_group"/>
+    </indexes>
+    <id name="saleId" type="integer" column="sale_id"/>
+    <id name="taxType" type="smallint" column="tax_type"/>
+    <id name="taxGroup" type="string" column="tax_group" length="32"/>
+    <field name="saleTaxBasis" type="decimal" column="sale_tax_basis" precision="15" scale="4" nullable="false"/>
+    <field name="saleTaxAmount" type="decimal" column="sale_tax_amount" precision="15" scale="4" nullable="false"/>
+    <field name="printSequence" type="boolean" column="print_sequence" nullable="false">
+      <options>
+        <option name="default">0</option>
+      </options>
+    </field>
+    <field name="name" type="string" column="name" length="255" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="taxRate" type="decimal" column="tax_rate" precision="15" scale="4" nullable="false"/>
+    <field name="salesTaxCode" type="string" column="sales_tax_code" length="32" nullable="false">
+      <options>
+        <option name="fixed"/>
+        <option name="default"/>
+      </options>
+    </field>
+    <field name="roundingCode" type="boolean" column="rounding_code" nullable="false">
+      <options>
+        <option name="default">0</option>
+      </options>
+    </field>
+  </entity>
+</doctrine-mapping>

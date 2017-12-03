@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="Databases\OsPosBundle\Entity\OsposItems" table="ospos_items">
+    <indexes>
+      <index name="supplier_id" columns="supplier_id"/>
+    </indexes>
+    <unique-constraints>
+      <unique-constraint name="item_number" columns="item_number"/>
+    </unique-constraints>
+    <id name="itemId" type="integer" column="item_id">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="name" type="string" column="name" length="255" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="category" type="string" column="category" length="255" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="itemNumber" type="string" column="item_number" length="255" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="description" type="string" column="description" length="255" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="costPrice" type="decimal" column="cost_price" precision="15" scale="2" nullable="false"/>
+    <field name="unitPrice" type="decimal" column="unit_price" precision="15" scale="2" nullable="false"/>
+    <field name="reorderLevel" type="decimal" column="reorder_level" precision="15" scale="3" nullable="false">
+      <options>
+        <option name="default">0.000</option>
+      </options>
+    </field>
+    <field name="receivingQuantity" type="decimal" column="receiving_quantity" precision="15" scale="3" nullable="false">
+      <options>
+        <option name="default">1.000</option>
+      </options>
+    </field>
+    <field name="picFilename" type="string" column="pic_filename" length="255" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="allowAltDescription" type="boolean" column="allow_alt_description" nullable="false"/>
+    <field name="isSerialized" type="boolean" column="is_serialized" nullable="false"/>
+    <field name="stockType" type="boolean" column="stock_type" nullable="false">
+      <options>
+        <option name="default">0</option>
+      </options>
+    </field>
+    <field name="itemType" type="boolean" column="item_type" nullable="false">
+      <options>
+        <option name="default">0</option>
+      </options>
+    </field>
+    <field name="taxCategoryId" type="integer" column="tax_category_id" nullable="false">
+      <options>
+        <option name="unsigned"/>
+        <option name="default">1</option>
+      </options>
+    </field>
+    <field name="deleted" type="integer" column="deleted" nullable="false">
+      <options>
+        <option name="unsigned"/>
+        <option name="default">0</option>
+      </options>
+    </field>
+    <field name="custom1" type="string" column="custom1" length="255" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="custom2" type="string" column="custom2" length="255" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="custom3" type="string" column="custom3" length="255" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="custom4" type="string" column="custom4" length="255" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="custom5" type="string" column="custom5" length="255" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="custom6" type="string" column="custom6" length="255" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="custom7" type="string" column="custom7" length="255" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="custom8" type="string" column="custom8" length="255" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="custom9" type="string" column="custom9" length="255" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="custom10" type="string" column="custom10" length="255" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <many-to-one field="supplier" target-entity="OsposSuppliers" fetch="LAZY">
+      <join-columns>
+        <join-column name="supplier_id" referenced-column-name="person_id"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-many field="location" target-entity="OsposStockLocations" inversed-by="item" fetch="LAZY">
+      <join-table name="ospos_item_quantities">
+        <join-columns>
+          <join-column name="item_id" referenced-column-name="item_id"/>
+        </join-columns>
+        <inverse-join-columns>
+          <join-column name="location_id" referenced-column-name="location_id"/>
+        </inverse-join-columns>
+      </join-table>
+    </many-to-many>
+  </entity>
+</doctrine-mapping>

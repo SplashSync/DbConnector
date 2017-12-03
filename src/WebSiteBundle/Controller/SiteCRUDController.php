@@ -67,6 +67,15 @@ class SiteCRUDController extends Controller
         $Results['connect'] = Splash::Connect();
         $ConnectTest_Log = Splash::Log()->GetHtmlLog(True);
         
+//==============================================================================
+// Create Document Manager 
+$Em = \Doctrine\ORM\EntityManager::create( 
+        $Site->getDatabaseConfiguration($this->getDoctrine()->getConnection()), 
+        $this->getDoctrine()->getManager()->getConfiguration() 
+        );
+//                $this->defaultDocumentManager->getConnection(), $configuration, $this->defaultDocumentManager->getEventManager()
+//);
+//dump($Em->getRepository("OsPosBundle:OsposPeople")->findAll());
 
         return $this->renderWithExtraParams($this->admin->getTemplate('show'), [
             'action' => 'show',

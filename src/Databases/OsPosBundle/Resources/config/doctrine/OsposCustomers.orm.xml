@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="Databases\OsPosBundle\Entity\OsposCustomers" table="ospos_customers">
+    <indexes>
+      <index name="person_id" columns="person_id"/>
+      <index name="package_id" columns="package_id"/>
+    </indexes>
+    <unique-constraints>
+      <unique-constraint name="account_number" columns="account_number"/>
+    </unique-constraints>
+    <id name="person" association-key="true"/>
+    <field name="companyName" type="string" column="company_name" length="255" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="accountNumber" type="string" column="account_number" length="255" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="taxable" type="integer" column="taxable" nullable="false">
+      <options>
+        <option name="unsigned"/>
+        <option name="default">1</option>
+      </options>
+    </field>
+    <field name="salesTaxCode" type="string" column="sales_tax_code" length="32" nullable="false">
+      <options>
+        <option name="fixed"/>
+        <option name="default">1</option>
+      </options>
+    </field>
+    <field name="discountPercent" type="decimal" column="discount_percent" precision="15" scale="2" nullable="false">
+      <options>
+        <option name="default">0.00</option>
+      </options>
+    </field>
+    <field name="points" type="integer" column="points" nullable="true">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="deleted" type="integer" column="deleted" nullable="false">
+      <options>
+        <option name="unsigned"/>
+        <option name="default">0</option>
+      </options>
+    </field>
+    <one-to-one field="person" target-entity="OsposPeople" fetch="LAZY">
+      <join-columns>
+        <join-column name="person_id" referenced-column-name="person_id"/>
+      </join-columns>
+    </one-to-one>
+    <many-to-one field="package" target-entity="OsposCustomersPackages" fetch="LAZY">
+      <join-columns>
+        <join-column name="package_id" referenced-column-name="package_id"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>

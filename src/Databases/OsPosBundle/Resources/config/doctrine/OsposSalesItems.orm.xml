@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="Databases\OsPosBundle\Entity\OsposSalesItems" table="ospos_sales_items">
+    <indexes>
+      <index name="sale_id" columns="sale_id"/>
+      <index name="item_id" columns="item_id"/>
+      <index name="item_location" columns="item_location"/>
+    </indexes>
+    <id name="line" type="integer" column="line"/>
+    <id name="item" association-key="true"/>
+    <id name="sale" association-key="true"/>
+    <field name="description" type="string" column="description" length="255" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="serialnumber" type="string" column="serialnumber" length="30" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="quantityPurchased" type="decimal" column="quantity_purchased" precision="15" scale="3" nullable="false">
+      <options>
+        <option name="default">0.000</option>
+      </options>
+    </field>
+    <field name="itemCostPrice" type="decimal" column="item_cost_price" precision="15" scale="2" nullable="false"/>
+    <field name="itemUnitPrice" type="decimal" column="item_unit_price" precision="15" scale="2" nullable="false"/>
+    <field name="discountPercent" type="decimal" column="discount_percent" precision="15" scale="2" nullable="false">
+      <options>
+        <option name="default">0.00</option>
+      </options>
+    </field>
+    <field name="printOption" type="boolean" column="print_option" nullable="false">
+      <options>
+        <option name="default">0</option>
+      </options>
+    </field>
+    <one-to-one field="item" target-entity="OsposItems" fetch="LAZY">
+      <join-columns>
+        <join-column name="item_id" referenced-column-name="item_id"/>
+      </join-columns>
+    </one-to-one>
+    <one-to-one field="sale" target-entity="OsposSales" fetch="LAZY">
+      <join-columns>
+        <join-column name="sale_id" referenced-column-name="sale_id"/>
+      </join-columns>
+    </one-to-one>
+    <many-to-one field="itemLocation" target-entity="OsposStockLocations" fetch="LAZY">
+      <join-columns>
+        <join-column name="item_location" referenced-column-name="location_id"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>

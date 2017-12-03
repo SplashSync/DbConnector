@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="Databases\OsPosBundle\Entity\OsposReceivingsItems" table="ospos_receivings_items">
+    <indexes>
+      <index name="item_id" columns="item_id"/>
+      <index name="IDX_2071E350C8178241" columns="receiving_id"/>
+    </indexes>
+    <id name="line" type="integer" column="line"/>
+    <id name="item" association-key="true"/>
+    <id name="receiving" association-key="true"/>
+    <field name="description" type="string" column="description" length="30" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="serialnumber" type="string" column="serialnumber" length="30" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="quantityPurchased" type="decimal" column="quantity_purchased" precision="15" scale="3" nullable="false">
+      <options>
+        <option name="default">0.000</option>
+      </options>
+    </field>
+    <field name="itemCostPrice" type="decimal" column="item_cost_price" precision="15" scale="2" nullable="false"/>
+    <field name="itemUnitPrice" type="decimal" column="item_unit_price" precision="15" scale="2" nullable="false"/>
+    <field name="discountPercent" type="decimal" column="discount_percent" precision="15" scale="2" nullable="false">
+      <options>
+        <option name="default">0.00</option>
+      </options>
+    </field>
+    <field name="itemLocation" type="integer" column="item_location" nullable="false">
+      <options>
+        <option name="unsigned"/>
+      </options>
+    </field>
+    <field name="receivingQuantity" type="decimal" column="receiving_quantity" precision="15" scale="3" nullable="false">
+      <options>
+        <option name="default">1.000</option>
+      </options>
+    </field>
+    <one-to-one field="item" target-entity="OsposItems" fetch="LAZY">
+      <join-columns>
+        <join-column name="item_id" referenced-column-name="item_id"/>
+      </join-columns>
+    </one-to-one>
+    <one-to-one field="receiving" target-entity="OsposReceivings" fetch="LAZY">
+      <join-columns>
+        <join-column name="receiving_id" referenced-column-name="receiving_id"/>
+      </join-columns>
+    </one-to-one>
+  </entity>
+</doctrine-mapping>

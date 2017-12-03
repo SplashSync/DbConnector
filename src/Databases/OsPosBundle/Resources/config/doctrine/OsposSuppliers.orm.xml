@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="Databases\OsPosBundle\Entity\OsposSuppliers" table="ospos_suppliers">
+    <indexes>
+      <index name="person_id" columns="person_id"/>
+    </indexes>
+    <unique-constraints>
+      <unique-constraint name="account_number" columns="account_number"/>
+    </unique-constraints>
+    <id name="person" association-key="true"/>
+    <field name="companyName" type="string" column="company_name" length="255" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="agencyName" type="string" column="agency_name" length="255" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="accountNumber" type="string" column="account_number" length="255" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="deleted" type="integer" column="deleted" nullable="false">
+      <options>
+        <option name="unsigned"/>
+        <option name="default">0</option>
+      </options>
+    </field>
+    <one-to-one field="person" target-entity="OsposPeople" fetch="LAZY">
+      <join-columns>
+        <join-column name="person_id" referenced-column-name="person_id"/>
+      </join-columns>
+    </one-to-one>
+  </entity>
+</doctrine-mapping>

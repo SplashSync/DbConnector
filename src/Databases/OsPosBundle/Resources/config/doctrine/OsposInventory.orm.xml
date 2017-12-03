@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="Databases\OsPosBundle\Entity\OsposInventory" table="ospos_inventory">
+    <indexes>
+      <index name="trans_items" columns="trans_items"/>
+      <index name="trans_user" columns="trans_user"/>
+      <index name="trans_location" columns="trans_location"/>
+    </indexes>
+    <id name="transId" type="integer" column="trans_id">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="transDate" type="datetime" column="trans_date" nullable="false">
+      <options>
+        <option name="default">CURRENT_TIMESTAMP</option>
+      </options>
+    </field>
+    <field name="transComment" type="text" column="trans_comment" length="65535" nullable="false">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="transInventory" type="decimal" column="trans_inventory" precision="15" scale="3" nullable="false">
+      <options>
+        <option name="default">0.000</option>
+      </options>
+    </field>
+    <many-to-one field="transItems" target-entity="OsposItems" fetch="LAZY">
+      <join-columns>
+        <join-column name="trans_items" referenced-column-name="item_id"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="transUser" target-entity="OsposEmployees" fetch="LAZY">
+      <join-columns>
+        <join-column name="trans_user" referenced-column-name="person_id"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="transLocation" target-entity="OsposStockLocations" fetch="LAZY">
+      <join-columns>
+        <join-column name="trans_location" referenced-column-name="location_id"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>

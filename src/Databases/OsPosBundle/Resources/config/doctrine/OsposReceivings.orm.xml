@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<doctrine-mapping xmlns="http://doctrine-project.org/schemas/orm/doctrine-mapping" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://doctrine-project.org/schemas/orm/doctrine-mapping http://doctrine-project.org/schemas/orm/doctrine-mapping.xsd">
+  <entity name="Databases\OsPosBundle\Entity\OsposReceivings" table="ospos_receivings">
+    <indexes>
+      <index name="supplier_id" columns="supplier_id"/>
+      <index name="employee_id" columns="employee_id"/>
+      <index name="reference" columns="reference"/>
+    </indexes>
+    <id name="receivingId" type="integer" column="receiving_id">
+      <generator strategy="IDENTITY"/>
+    </id>
+    <field name="receivingTime" type="datetime" column="receiving_time" nullable="false">
+      <options>
+        <option name="default">CURRENT_TIMESTAMP</option>
+      </options>
+    </field>
+    <field name="comment" type="text" column="comment" length="65535" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="paymentType" type="string" column="payment_type" length="20" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <field name="reference" type="string" column="reference" length="32" nullable="true">
+      <options>
+        <option name="fixed"/>
+      </options>
+    </field>
+    <many-to-one field="employee" target-entity="OsposEmployees" fetch="LAZY">
+      <join-columns>
+        <join-column name="employee_id" referenced-column-name="person_id"/>
+      </join-columns>
+    </many-to-one>
+    <many-to-one field="supplier" target-entity="OsposSuppliers" fetch="LAZY">
+      <join-columns>
+        <join-column name="supplier_id" referenced-column-name="person_id"/>
+      </join-columns>
+    </many-to-one>
+  </entity>
+</doctrine-mapping>
