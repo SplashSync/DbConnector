@@ -13,7 +13,7 @@ splash:
     resource: routing/splash.yml
     prefix: /
 
-app:
-    resource: '@AppBundle/Controller/'
-    type: annotation
+#app:
+#    resource: '@AppBundle/Controller/'
+#    type: annotation
 

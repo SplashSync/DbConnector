@@ -1,5 +1,5 @@
 {
-    "name": "symfony/framework-standard-edition",
+    "name": "splash/databases-connector",
     "license": "MIT",
     "type": "project",
     "description": "The \"Symfony Standard Edition\" distribution",
@@ -12,7 +12,7 @@
     },
     "autoload-dev": {
         "psr-4": { "Tests\\": "tests/" },
-        "files": [ "vendor/symfony/symfony/src/Symfony/Component/VarDumper/Resources/functions/dump.php" ]
+        "files": [ "vendor/symfony/symfony/src/Symfony/Component/VarDumper/Resources/functions/dump.php" , "vendor/splash/php-bundle/Tests/KernelTestCase.php"]
     },
     "require": {
         "php":                                              "^7.0",

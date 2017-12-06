@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "fc71035afcb878aca78c64f434c3be69",
+    "content-hash": "9b15df6dc945a339adde46ce7e9a8655",
     "packages": [
         {
             "name": "cocur/slugify",
@@ -2430,12 +2430,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/sonata-project/SonataUserBundle.git",
-                "reference": "2deeb9b8a8c2e5df218e4e5937e23cc36780a8b7"
+                "reference": "4e963cef0461bd336602be8c878beac5db705827"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sonata-project/SonataUserBundle/zipball/2deeb9b8a8c2e5df218e4e5937e23cc36780a8b7",
-                "reference": "2deeb9b8a8c2e5df218e4e5937e23cc36780a8b7",
+                "url": "https://api.github.com/repos/sonata-project/SonataUserBundle/zipball/4e963cef0461bd336602be8c878beac5db705827",
+                "reference": "4e963cef0461bd336602be8c878beac5db705827",
                 "shasum": ""
             },
             "require": {
@@ -2469,7 +2469,6 @@
                 "matthiasnoback/symfony-config-test": "^2.1",
                 "matthiasnoback/symfony-dependency-injection-test": "^1.1",
                 "nelmio/api-doc-bundle": "^2.4",
-                "sllh/php-cs-fixer-styleci-bridge": "^2.0",
                 "sonata-project/block-bundle": "^3.2",
                 "sonata-project/google-authenticator": "^1.0 || ^2.0",
                 "sonata-project/seo-bundle": "^2.0",
@@ -2486,7 +2485,7 @@
             "type": "symfony-bundle",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "4.x-dev"
+                    "dev-master": "5.x-dev"
                 }
             },
             "autoload": {
@@ -2516,7 +2515,7 @@
                 "sonata",
                 "user"
             ],
-            "time": "2017-12-03T09:10:58+00:00"
+            "time": "2017-12-05T01:00:21+00:00"
         },
         {
             "name": "splash/php-bundle",
@@ -2524,12 +2523,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/SplashSync/Php-Bundle.git",
-                "reference": "901b29cc491b8c5ab7788bfeb9f5578288396d08"
+                "reference": "6b6c814f3cc199159a0dbf3d3c9cd35479bfe911"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/SplashSync/Php-Bundle/zipball/901b29cc491b8c5ab7788bfeb9f5578288396d08",
-                "reference": "901b29cc491b8c5ab7788bfeb9f5578288396d08",
+                "url": "https://api.github.com/repos/SplashSync/Php-Bundle/zipball/6b6c814f3cc199159a0dbf3d3c9cd35479bfe911",
+                "reference": "6b6c814f3cc199159a0dbf3d3c9cd35479bfe911",
                 "shasum": ""
             },
             "require": {
@@ -2554,7 +2553,7 @@
                 "GPL"
             ],
             "description": "Splash Core Bundle for Symfony 2 Applications",
-            "time": "2017-12-03T15:33:02+00:00"
+            "time": "2017-12-03T18:48:59+00:00"
         },
         {
             "name": "splash/phpcore",
@@ -3208,16 +3207,16 @@
         },
         {
             "name": "symfony/symfony",
-            "version": "v3.4.0",
+            "version": "v3.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/symfony.git",
-                "reference": "0a47db379b8cc74cdd84e1e6870fafc4a4ac8351"
+                "reference": "46d4a9027c752ce425f67c94e89e3e3098f3a488"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/symfony/zipball/0a47db379b8cc74cdd84e1e6870fafc4a4ac8351",
-                "reference": "0a47db379b8cc74cdd84e1e6870fafc4a4ac8351",
+                "url": "https://api.github.com/repos/symfony/symfony/zipball/46d4a9027c752ce425f67c94e89e3e3098f3a488",
+                "reference": "46d4a9027c752ce425f67c94e89e3e3098f3a488",
                 "shasum": ""
             },
             "require": {
@@ -3359,7 +3358,7 @@
             "keywords": [
                 "framework"
             ],
-            "time": "2017-11-30T16:56:19+00:00"
+            "time": "2017-12-04T23:05:15+00:00"
         },
         {
             "name": "twig/extensions",
@@ -4855,16 +4854,16 @@
         },
         {
             "name": "symfony/phpunit-bridge",
-            "version": "v3.4.0",
+            "version": "v3.4.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/phpunit-bridge.git",
-                "reference": "292c1a79c5c32360c62bbe67022a38c6535094d5"
+                "reference": "9ecf83a2628b4668f02e680f65357c62600749fc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/292c1a79c5c32360c62bbe67022a38c6535094d5",
-                "reference": "292c1a79c5c32360c62bbe67022a38c6535094d5",
+                "url": "https://api.github.com/repos/symfony/phpunit-bridge/zipball/9ecf83a2628b4668f02e680f65357c62600749fc",
+                "reference": "9ecf83a2628b4668f02e680f65357c62600749fc",
                 "shasum": ""
             },
             "require": {
@@ -4913,7 +4912,7 @@
             ],
             "description": "Symfony PHPUnit Bridge",
             "homepage": "https://symfony.com",
-            "time": "2017-11-22T11:41:29+00:00"
+            "time": "2017-12-04T20:23:06+00:00"
         },
         {
             "name": "theseer/tokenizer",

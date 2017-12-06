@@ -74,15 +74,28 @@ class Local extends BaseLocalClass
      */
     public function Parameters()
     {
-        
         $Parameters       =     array();
-
-        if (is_null($this->site)) {
+        //====================================================================//
+        //  No WebSite Given
+        if ( is_null($this->site) && (!is_null($this->getContainer()))) {
+            //====================================================================//
+            //  During Tests
+            if ($this->getContainer()->getParameter("kernel.environment") == 'test' ) {
+                $Websites   =   $this->getContainer()->get("doctrine")->getRepository("WebSiteBundle:Site")->findByEnabled(1);
+                $this->site    =   array_shift($Websites);
+            }
+        }
+        if ( is_null($this->getContainer()) ) {
+            throw new \Exception("No Container");
+        }
+        if ( is_null($this->site) ) {
+//echo "No WebSite" . "\n";
+throw new \Exception("No WebSite");
+//exit;
             $Parameters["WsIdentifier"]         =   "NoUse";
             $Parameters["WsEncryptionKey"]      =   "NoUse";
             return $Parameters;
-        } 
-        
+        }
         //====================================================================//
         // Server Identification Parameters
         $Parameters["WsIdentifier"]         =   $this->site->getAccountId();
@@ -93,25 +106,51 @@ class Local extends BaseLocalClass
         if ( !empty($this->site->getExpertMode()) ) {
             $Parameters["WsHost"]           =   $this->site->getAccountHost();
         }
-        
         //====================================================================//
         // Use of Symfony Routes => Overide of Local Server Path Address
-        if ($this->container) {
-            $Parameters["ServerPath"]      =   $this->container->get('router')
+        if ($this->getContainer()) {
+            $Parameters["ServerPath"]      =   $this->getContainer()->get('router')
                     ->generate("splash_website_soap", ["SiteId" => $this->site->getId()]);
         }
-        
-        
         //====================================================================//
         // If no Server Name => We are in Command Mode
         if ( ( Splash::Input("SCRIPT_NAME") === "app/console" ) 
             || (Splash::Input("SCRIPT_NAME") === "bin/console" ) ){
             $Parameters["ServerHost"]      =   "localhost";
-        }
-        
+        }        
+//var_dump($Parameters);  
         return $Parameters;
     }    
-           
+
+    /**
+     *      @abstract       Include Local Includes Files
+     * 
+     *      Include here any local files required by local functions. 
+     *      This Function is called each time the module is loaded 
+     * 
+     *      There may be differents scenarios depending if module is 
+     *      loaded as a library or as a NuSOAP Server. 
+     * 
+     *      This is triggered by global constant SPLASH_SERVER_MODE.
+     * 
+     *      @return         bool                     
+     */
+    public function Includes()
+    {
+        //====================================================================//
+        //  No WebSite Given
+        if ( is_null($this->site) && (!is_null($this->getContainer()))) {
+            //====================================================================//
+            //  During Tests
+            if ( $this->getContainer()->getParameter("kernel.environment") == 'test' ) {
+                $Websites   =   $this->getContainer()->get("doctrine")->getRepository("WebSiteBundle:Site")->findByEnabled(1);
+                $this->site    =   array_shift($Websites);
+            }
+        }
+        
+        return True;
+    }   
+    
     /**
      *      @abstract       Return Local Server Self Test Result
      *                      
@@ -134,7 +173,7 @@ class Local extends BaseLocalClass
 
         //====================================================================//
         //  Verify - Container is Given
-        if ( empty($this->container) ) {
+        if ( empty($this->getContainer()) ) {
             return Splash::Log()->Err("ErrNoContainer");
         }        
         
@@ -179,10 +218,10 @@ class Local extends BaseLocalClass
         
         //====================================================================//
         // Server Logo & Images
-        $icopath = $this->container->get('kernel')->getRootDir() . "/../web/favicon.ico"; 
-        $Response->icoraw           =   Splash::File()->ReadFileContents(
-                is_file($icopath) ? $icopath : (dirname(__DIR__) . "/Resources/public/symfony_ico.png")
-                );
+//        $icopath = $this->container->get('kernel')->getRootDir() . "/../web/favicon.ico"; 
+//        $Response->icoraw           =   Splash::File()->ReadFileContents(
+//                is_file($icopath) ? $icopath : (dirname(__DIR__) . "/Resources/public/symfony_ico.png")
+//                );
 
         if ($this->getParameter("logo",Null, "infos")) {
             $Response->logourl      =   (strpos($this->getParameter("logo",Null, "infos"), "http:///") == 0) ? Null : filter_input(INPUT_SERVER, "SERVER_NAME");
@@ -231,9 +270,9 @@ class Local extends BaseLocalClass
 ////echo count($WebSites);
 //echo 'SEQUENCES';
 
-        foreach ($WebSites  as $WebSite) {
-            echo $WebSite->getName();
-        }                
+//        foreach ($WebSites  as $WebSite) {
+//            echo $WebSite->getName();
+//        }                
 
         switch($Name) {
             
@@ -294,33 +333,20 @@ class Local extends BaseLocalClass
     public function Boot(ContainerInterface $container, Site $WebSite = Null) 
     {
         //====================================================================//
-        //  Store Container
-        $this->container    =   $container;
+        //  Boot Base Module Class
+        parent::Boot($container);
+        
         //====================================================================//
         //  No WebSite Given
         if ( is_null($WebSite) ) {
-            
-            //====================================================================//
-            //  During Tests
-            if ( $container->getParameter("kernel.environment") == 'test' ) {
-//                $Websites   =   $this->container->get("doctrine")->getRepository("WebSiteBundle:Site")->findByEnabled(1);
-                $Websites   =   $this->container->get("doctrine")->getRepository("WebSiteBundle:Site")->findByEnabled(1);
-                $WebSite    =   array_shift($Websites);
-            } else {
-                return;
-            }
+            return;
         } 
         //====================================================================//
         //  Store Current WebSite
         $this->site         =   $WebSite;
         //====================================================================//
         //  Load Server Parameters
-//        $this->config       =   $this->container->getParameter("splash");
-        //====================================================================//
-        //  Unset Splash Configuration => Will be reloaded uppon next request
-        unset(Splash::Core()->conf);
-        unset(Splash::Core()->log);
-        
+        $this->config       =   $this->getContainer()->getParameter("splash");
         //====================================================================//
         // Setup Annotations Manager
         $WebSiteManager     =    $container->get('splash.website.manager');
