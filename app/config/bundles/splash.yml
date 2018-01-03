@@ -2,3 +2,20 @@
 splash:
     id:             NoUse
     key:            NoUse
+
+splash_tasking:
+   
+    environement:               prod
+    supervisor:
+        max_workers:            2               # Maximum Number of Worker on a Front Server
+        max_age:                3600            # Max Execution Time (Seconds) before reset of a Worker in Seconds   
+    workers:
+        max_age:                360             # Max Execution Time (Seconds) before reset of a Worker     => Default : 3600 Seconds          
+    tasks:
+        max_age:                360             # Time (Seconds) Before We Delete a finished Task
+        error_delay:            65              # Delay before considering a running task as failled. In Seconds
+    static:
+        CommitsMonitor:
+            class:              WebSiteBundle\Jobs\CommitsMonitorJob
+            frequency:          1
+            token:             CHANGES:COMMITS

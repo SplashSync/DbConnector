@@ -57,6 +57,14 @@ sonata_admin:
                     - sonata.user.admin.user
 #                    - sonata.user.admin.group                    
                     
+            sonata.admin.group.system:
+                label: System
+                icon:  '<i class="fa fa-tasks"></i>'
+                items:
+                    - sonata.admin.tasks
+                    - sonata.admin.workers
+                    - sonata.admin.tokens
+                    
     templates:
         layout:                         SonataAdminBundle::standard_layout.html.twig
         ajax:                           SonataAdminBundle::ajax_layout.html.twig
