@@ -10,6 +10,16 @@ services:
             - '@event_dispatcher'
             - '%database_name%'
             
+    ########################################################################
+    # Splash WebSite Database Event Listener
+    splash.website.EventListener:
+        class:      WebSiteBundle\EventListener\DatabaseEventListener
+        calls:
+            - [ setTaskingService,  [ '@TaskingService'] ]
+        tags:
+            - { name: doctrine.event_listener, event: postConnect }
+            - { name: kernel.event_listener, event: kernel.finish_request, method: onKernelTerminate }  
+            
     ################################################################################
     # SPLASH WebSite Bundle Site Sonata Admin Service
     splash.website.admin.site:

@@ -206,6 +206,33 @@ class WebSiteManager
     public function updateDatabaseTrigger(Site $WebSite, Connection $Connection, $Trigger) {
 
         //==============================================================================
+        // Create Object Create SQL Trigger
+        $Connection->executeQuery($this->buildDatabaseTriggerSQL($Trigger, 'CREATE'));
+
+        //==============================================================================
+        // Create Object Update SQL Trigger
+        $Connection->executeQuery($this->buildDatabaseTriggerSQL($Trigger, 'UPDATE'));
+                
+        //==============================================================================
+        // Create Object Delete SQL Trigger
+        $Connection->executeQuery($this->buildDatabaseTriggerSQL($Trigger, 'DELETE'));
+        
+    }   
+    
+    
+    /**
+     * @abstract    Build WebSite Trigger SQL CODE
+     * 
+     * @param   Site        $WebSite        Current Web Site
+     * @param   Connection  $Connection     Web Site Database Connection
+     * @param   array       $Trigger        Description
+     * @param   string      $Mode           Trigger Mode (CREATE / UPDATE / DELETE)
+     * 
+     * @return void
+     */
+    public function buildDatabaseTriggerSQL($Trigger, $Mode) {
+
+        //==============================================================================
         // Safety checks
         if ( 
                 !isset($Trigger["ObjectType"])  || empty($Trigger["ObjectType"]) ||
@@ -214,35 +241,40 @@ class WebSiteManager
                 ) {
             return;
         }
+        
+        switch ( $Mode ) {
+            case "CREATE":
+                $Event      =   "INSERT";
+                $Source     =   "NEW";
+                break;
+            case "DELETE":
+                $Event      =   "DELETE";
+                $Source     =   "OLD";
+                break;
+            case "UPDATE":
+            default:
+                $Event      =   "UPDATE";
+                $Source     =   "NEW";
+                break;
+        }
+        
+        $SQL    =   "";
+        //==============================================================================
+        // DROP PREVIOUS TRIGGER 
+        $SQL    =   " DROP TRIGGER IF EXISTS `SPLASH_SYNC_" . $Mode . "`;";
+        //==============================================================================
+        // CREATE TRIGGER 
+        $SQL    .=   " CREATE TRIGGER `SPLASH_SYNC_" . $Mode . "` AFTER " . $Event . " ON `" . $Trigger ["Table"]. "` ";
+        $SQL    .=   " FOR EACH ROW BEGIN";
+        $SQL    .=   " IF @IS_SPLASH IS NULL THEN";
+        $SQL    .=   " INSERT INTO `" . $this->DatabaseName . "`.`sites__commits` ( site_id, commitedAt, ObjectType, ObjectId, Action )";
+        $SQL    .=   " VALUES ( 1, SYSDATE(), '" . $Trigger["ObjectType"] . "', " . $Source . "." . $Trigger["IdField"] . ", '" . strtolower($Mode) . "' );";
+        $SQL    .=   " END IF;";
+        $SQL    .=   " END;";
+        
+        return $SQL;
+        
+    } 
 
-        //==============================================================================
-        // Create Object Create SQL Trigger
-        $CREATE =   " DROP TRIGGER IF EXISTS `SPLASH_SYNC_CREATE`;";
-        $CREATE.=   " CREATE TRIGGER `SPLASH_SYNC_CREATE` AFTER INSERT ON `" . $Trigger ["Table"]. "` ";
-        $CREATE.=   " FOR EACH ROW";
-        $CREATE.=   " INSERT INTO `" . $this->DatabaseName . "`.`sites__commits` ( site_id, commitedAt, ObjectType, ObjectId, Action )";
-        $CREATE.=   " VALUES ( 1, SYSDATE(), '" . $Trigger["ObjectType"] . "', NEW." . $Trigger["IdField"] . ", 'create' );";
-        $Connection->executeQuery($CREATE);
-        
-        //==============================================================================
-        // Create Object Update SQL Trigger
-        $UPDATE =   " DROP TRIGGER IF EXISTS `SPLASH_SYNC_UPDATE`;";
-        $UPDATE.=   " CREATE TRIGGER `SPLASH_SYNC_UPDATE` AFTER UPDATE ON `" . $Trigger ["Table"]. "` ";
-        $UPDATE.=   " FOR EACH ROW";
-        $UPDATE.=   " INSERT INTO `" . $this->DatabaseName . "`.`sites__commits` ( site_id, commitedAt, ObjectType, ObjectId, Action )";
-        $UPDATE.=   " VALUES ( 1, SYSDATE(), '" . $Trigger["ObjectType"] . "', NEW." . $Trigger["IdField"] . ", 'update' );";
-        $Connection->executeQuery($UPDATE);
-                
-        //==============================================================================
-        // Create Object Delete SQL Trigger
-        $DELETE =   " DROP TRIGGER IF EXISTS `SPLASH_SYNC_DELETE`;";
-        $DELETE.=   " CREATE TRIGGER `SPLASH_SYNC_DELETE` AFTER DELETE ON `" . $Trigger ["Table"]. "` ";
-        $DELETE.=   " FOR EACH ROW";
-        $DELETE.=   " INSERT INTO `" . $this->DatabaseName . "`.`sites__commits` ( site_id, commitedAt, ObjectType, ObjectId, Action )";
-        $DELETE.=   " VALUES ( 1, SYSDATE(), '" . $Trigger["ObjectType"] . "', OLD." . $Trigger["IdField"] . ", 'delete' );";
-        $Connection->executeQuery($DELETE);
-        
-    }   
-    
     
 }

@@ -238,10 +238,16 @@ class Commits
      *
      * @return Commits
      */
-    public function setNotified($notified)
+    public function setNotified($notified = True)
     {
         $this->notified = $notified;
-
+        
+        if ($notified && empty($this->notifiedAt)) {
+            $this->notifiedAt = new \DateTime();
+        } else {
+            $this->notifiedAt = Null;
+        }
+        
         return $this;
     }
 

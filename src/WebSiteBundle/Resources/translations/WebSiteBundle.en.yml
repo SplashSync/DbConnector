@@ -1,0 +1,6 @@
+
+
+tasks:
+    co:
+        label:      Object Changes Commit
+        desc:       Notify Splash Server of Local Changes
