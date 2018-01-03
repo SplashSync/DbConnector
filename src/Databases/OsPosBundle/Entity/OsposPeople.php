@@ -99,9 +99,10 @@ class OsposPeople
     /**
      * @var integer
      *
-     * @ORM\Column(name="person_id", type="integer")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\Column(name="person_id", type="integer")
      */
     private $personId;
 

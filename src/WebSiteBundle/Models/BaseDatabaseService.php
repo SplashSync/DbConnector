@@ -42,6 +42,11 @@ abstract class BaseDatabaseService {
                 
             ),
             //==============================================================================
+            //  Triggers => List of Objects to Monitor
+            'Triggers'                   => array(
+                
+            ),
+            //==============================================================================
             //  Widgets to Sync
             'Widgets'                   => array(),
     );

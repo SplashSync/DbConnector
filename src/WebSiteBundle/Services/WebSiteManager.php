@@ -23,6 +23,9 @@ namespace WebSiteBundle\Services;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Doctrine\ORM\EntityManager;
+use Doctrine\DBAL\Connection;
+
+use Sonata\AdminBundle\Form\FormMapper;
 
 use WebSiteBundle\Entity\Site;
 
@@ -43,14 +46,20 @@ class WebSiteManager
     private $AvailableDatabases =   Null;
     
     /**
+     * @var string
+     */
+    private $DatabaseName       =   Null;
+    
+    /**
      * @var EventDispatcherInterface
      */
     private $Dispatcher;
     
-    public function __construct(EntityManager $EntityManager, EventDispatcherInterface $Dispatcher) {
+    public function __construct(EntityManager $EntityManager, EventDispatcherInterface $Dispatcher, $DatabaseName) {
         
         $this->BaseEntityManager    =   $EntityManager;
         $this->Dispatcher           =   $Dispatcher;
+        $this->DatabaseName         =   $DatabaseName;
     
     }
     
@@ -89,16 +98,18 @@ class WebSiteManager
      * @return EntityManager
      */
     public function getEntityManager( Site $WebSite ) {
+        
         //==============================================================================
         // Create Entity Manager for a WebSite
         return EntityManager::create( 
                 $WebSite->getDatabaseConfiguration($this->BaseEntityManager->getConnection()), 
-                $this->BaseEntityManager->getConfiguration() 
+                $this->BaseEntityManager->getConfiguration(), 
+                $this->BaseEntityManager->getEventManager() 
             );
     }
     
     /**
-     * @abstract    Get Website Dedicated Entity Manager
+     * @abstract    Get List of Website Objects Classes Names
      * 
      * @param Site $WebSite
      * 
@@ -114,6 +125,124 @@ class WebSiteManager
             
         return $DatabasesList[$WebSite->getServerType()]['Objects'];
     }
+
+    /**
+     * @abstract    Get List of Website Objects Triggers 
+     * 
+     * @param Site $WebSite
+     * 
+     * @return EntityManager
+     */
+    public function getObjectsTriggers( Site $WebSite ) {
+        
+        $DatabasesList  =   $this->getAvalaibeDatabases();
+        
+        if ( !isset($DatabasesList[$WebSite->getServerType()]) ) {
+            return array();
+        }
+            
+        return $DatabasesList[$WebSite->getServerType()]['Triggers'];
+    }
+
+    
+    /**
+     * @abstract    Get List of Website Widgets Classes Names
+     * 
+     * @param Site $WebSite
+     * 
+     * @return EntityManager
+     */
+    public function getWidgets( Site $WebSite ) {
+        
+        $DatabasesList  =   $this->getAvalaibeDatabases();
+        
+        if ( !isset($DatabasesList[$WebSite->getServerType()]) ) {
+            return array();
+        }
+
+        return array_merge(
+                [ "Splash\Local\Widgets\SelfTest" ],
+                $DatabasesList[$WebSite->getServerType()]['Widgets'] 
+            );
+    }
+    
+    /**
+     * @abstract    Populate WebSite Edit Form Using Events Dispatcher
+     * 
+     * @param   FormMapper  $FormMapper     Site Edit Form Mapper
+     * 
+     * @return void
+     */
+    public function populateEditForm( FormMapper $FormMapper ) {
+        $this->Dispatcher->dispatch('splash.databases.editform', new GenericEvent($FormMapper));
+    }
+    
+    /**
+     * @abstract    Update WebSite Database Triggers
+     * 
+     * @param   Site  $WebSite     Current Web Site
+     * 
+     * @return void
+     */
+    public function updateDatabaseTriggers(Site $WebSite) {
+        
+        $Triggers = $this->getObjectsTriggers($WebSite);
+        $Connection = $this->getEntityManager($WebSite)->getConnection();
+        foreach ($Triggers as $Trigger) {
+            $this->updateDatabaseTrigger($WebSite, $Connection, $Trigger);            
+        }
+        
+    }
+
+    /**
+     * @abstract    Update WebSite Trigger
+     * 
+     * @param   Site        $WebSite        Current Web Site
+     * @param   Connection  $Connection     Web Site Database Connection
+     * @param   array       $Trigger        Description
+     * 
+     * @return void
+     */
+    public function updateDatabaseTrigger(Site $WebSite, Connection $Connection, $Trigger) {
+
+        //==============================================================================
+        // Safety checks
+        if ( 
+                !isset($Trigger["ObjectType"])  || empty($Trigger["ObjectType"]) ||
+                !isset($Trigger["Table"])       || empty($Trigger["Table"]) ||
+                !isset($Trigger["IdField"])     || empty($Trigger["IdField"]) 
+                ) {
+            return;
+        }
+
+        //==============================================================================
+        // Create Object Create SQL Trigger
+        $CREATE =   " DROP TRIGGER IF EXISTS `SPLASH_SYNC_CREATE`;";
+        $CREATE.=   " CREATE TRIGGER `SPLASH_SYNC_CREATE` AFTER INSERT ON `" . $Trigger ["Table"]. "` ";
+        $CREATE.=   " FOR EACH ROW";
+        $CREATE.=   " INSERT INTO `" . $this->DatabaseName . "`.`sites__commits` ( site_id, commitedAt, ObjectType, ObjectId, Action )";
+        $CREATE.=   " VALUES ( 1, SYSDATE(), '" . $Trigger["ObjectType"] . "', NEW." . $Trigger["IdField"] . ", 'create' );";
+        $Connection->executeQuery($CREATE);
+        
+        //==============================================================================
+        // Create Object Update SQL Trigger
+        $UPDATE =   " DROP TRIGGER IF EXISTS `SPLASH_SYNC_UPDATE`;";
+        $UPDATE.=   " CREATE TRIGGER `SPLASH_SYNC_UPDATE` AFTER UPDATE ON `" . $Trigger ["Table"]. "` ";
+        $UPDATE.=   " FOR EACH ROW";
+        $UPDATE.=   " INSERT INTO `" . $this->DatabaseName . "`.`sites__commits` ( site_id, commitedAt, ObjectType, ObjectId, Action )";
+        $UPDATE.=   " VALUES ( 1, SYSDATE(), '" . $Trigger["ObjectType"] . "', NEW." . $Trigger["IdField"] . ", 'update' );";
+        $Connection->executeQuery($UPDATE);
+                
+        //==============================================================================
+        // Create Object Delete SQL Trigger
+        $DELETE =   " DROP TRIGGER IF EXISTS `SPLASH_SYNC_DELETE`;";
+        $DELETE.=   " CREATE TRIGGER `SPLASH_SYNC_DELETE` AFTER DELETE ON `" . $Trigger ["Table"]. "` ";
+        $DELETE.=   " FOR EACH ROW";
+        $DELETE.=   " INSERT INTO `" . $this->DatabaseName . "`.`sites__commits` ( site_id, commitedAt, ObjectType, ObjectId, Action )";
+        $DELETE.=   " VALUES ( 1, SYSDATE(), '" . $Trigger["ObjectType"] . "', OLD." . $Trigger["IdField"] . ", 'delete' );";
+        $Connection->executeQuery($DELETE);
+        
+    }   
     
     
 }

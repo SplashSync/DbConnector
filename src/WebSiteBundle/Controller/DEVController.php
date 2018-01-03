@@ -27,7 +27,6 @@ class DEVController extends BaseDEVController
         //====================================================================//
         // Boot Local Splash Module
         Splash::Local()->Boot($this->container, $Site);
-        
         //====================================================================//
         // Prepare debug Page
         $Params             =   $this->debugPrepare($Type, $ObjectId);        

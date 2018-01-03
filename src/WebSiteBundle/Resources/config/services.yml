@@ -4,9 +4,11 @@ services:
     # SPLASH WebSites manager Service
     splash.website.manager:
         class: WebSiteBundle\Services\WebSiteManager
+        public: true
         arguments:
             - '@doctrine.orm.website_entity_manager'
             - '@event_dispatcher'
+            - '%database_name%'
             
     ################################################################################
     # SPLASH WebSite Bundle Site Sonata Admin Service

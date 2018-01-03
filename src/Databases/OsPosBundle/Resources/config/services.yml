@@ -5,10 +5,19 @@ services:
     splash.databases.ospos:
         class: Databases\OsPosBundle\Services\DatabaseManager
         tags:
-            - { name: kernel.event_listener,    event: splash.databases.list,   method: onDatabaseListAction }
-#        arguments:
-#            - ~
+            - { name: kernel.event_listener,    event: splash.databases.list,       method: onDatabaseListAction }
+            - { name: kernel.event_listener,    event: splash.databases.editform,    method: onEditFormAction }
+        arguments:
+            - "@doctrine.orm.website_entity_manager"
+#            - "@doctrine.orm.entity_manager"
 #            - WebSiteBundle\Entity\Commits
 #            - ~
             
+    ########################################################################
+    # Splash OsPos Bundle Database Data Transformer
+    # Convert In/Out Doctrine Objects Fields to Splash Standard Format
+    splash.databases.ospos.transformer:
+        class:      Databases\OsPosBundle\Services\DataTransformer
+        public:     true
+        arguments:  ["@translator"]
             

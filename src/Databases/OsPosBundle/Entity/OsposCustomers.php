@@ -20,8 +20,11 @@ use Databases\OsPosBundle\Entity\ThirdParty\PeopleRedirectionTrait;
  *              description             =   "OsPos Customer Object",
  *              icon                    =   "fa fa-user",
  *              enable_push_created     =    false,
- *              target                  =   "Databases\OsPosBundle\Entity\OsposCustomers"
+ *              target                  =   "Databases\OsPosBundle\Entity\OsposCustomers",
+ *              transformer_service     =   "splash.databases.ospos.transformer"
  * )
+ * 
+ * @ORM\HasLifecycleCallbacks
  * 
  */
 class OsposCustomers
@@ -91,14 +94,15 @@ class OsposCustomers
      * @var \Databases\OsPosBundle\Entity\OsposPeople
      *
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
-     * @ORM\OneToOne(targetEntity="Databases\OsPosBundle\Entity\OsposPeople")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="person_id", referencedColumnName="person_id")
-     * })
+     * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\OneToOne(targetEntity="Databases\OsPosBundle\Entity\OsposPeople", cascade={"persist", "remove", "merge"})
+     * @ORM\JoinColumn(name="person_id", referencedColumnName="person_id")
+     * ORM\Column(name="person_id", type="integer")
      */
     private $person;
-
+    
+    private $id;
+    
     /**
      * @var \Databases\OsPosBundle\Entity\OsposCustomersPackages
      *
@@ -113,8 +117,40 @@ class OsposCustomers
     // Customer Construct Function
     //====================================================================//
 
+    public function __construct() {
+        $this->setPerson( new OsposPeople() );
+    }
 
+    //==============================================================================
+    //      Lifecycle          
+    //==============================================================================
     
+    /** 
+     * @ORM\PrePersist() 
+     */    
+    public function prePersist()
+    {
+//        //====================================================================//
+//        // Set Dates
+//        $this->setCreatedAt(new DateTime);
+//        $this->setUpdatedAt(new DateTime);
+//
+//        //====================================================================//
+//        // Set Info
+//        $this->setInfo(new Info);
+//        
+//        //====================================================================//
+//        // Generate Unique Identifier
+//        $this->newIdentifier();
+//        
+//        //====================================================================//
+//        // Generate Unique Encryption Key
+//        $this->newCryptKey();        
+        
+//        dump($this);
+    }
+
+
     //====================================================================//
     // Splash Specific Getters & Setters
     //====================================================================//
@@ -311,7 +347,7 @@ class OsposCustomers
     public function setPerson(\Databases\OsPosBundle\Entity\OsposPeople $person)
     {
         $this->person = $person;
-
+        
         return $this;
     }
 

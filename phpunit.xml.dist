@@ -8,7 +8,7 @@
     convertErrorsToExceptions   = "true"
     convertNoticesToExceptions  = "true"
     convertWarningsToExceptions = "true"
-    processIsolation            = "true"
+    processIsolation            = "false"
     stopOnFailure               = "true"
     syntaxCheck                 = "false"
     bootstrap                   = "app/autoload.php" 
@@ -39,7 +39,8 @@
     <php>
         <server name="KERNEL_DIR" value="app" />
         <server name="KERNEL_CLASS" value="AppKernel" />
-        <env    name="SYMFONY_DEPRECATION_HELPER" value="disabled" />
+        <env    name="SYMFONY_DEPRECATIONS_HELPER" value="disabled" />
+        <!--<env    name="SYMFONY_DEPRECATION" value="false" />-->
         <server name="SERVER_NAME" value="http://localhost/SplashDbConnector/web/app_test.php"/>        
         <const  name="SPLASH_DEBUG" value="true" />
     </php>

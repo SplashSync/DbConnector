@@ -136,6 +136,8 @@ class SiteAdmin extends Admin
             ->end()
 
         ;
+        
+        $this->WebSiteManager->populateEditForm($formMapper);
     }
 
     /**
@@ -153,4 +155,14 @@ class SiteAdmin extends Admin
 //
 //        return $object;
 //    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function postUpdate($Site)
+    {
+        $this->WebSiteManager->updateDatabaseTriggers($Site);
+    }
+    
+    
 }

@@ -3,19 +3,49 @@
 namespace Databases\OsPosBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Splash\Bundle\Annotation as SPL;
+
+use Databases\OsPosBundle\Entity\Products\ItemPriceTrait;
 
 /**
  * OsposItems
  *
  * @ORM\Table(name="ospos_items", uniqueConstraints={@ORM\UniqueConstraint(name="item_number", columns={"item_number"})}, indexes={@ORM\Index(name="supplier_id", columns={"supplier_id"})})
  * @ORM\Entity
+ * 
+ * @author Splash Sync <contact@splashsync.com>
+ * @SPL\Object( type                    =   "Product",
+ *              disabled                =   false,
+ *              name                    =   "Product",
+ *              description             =   "OsPos Product Object",
+ *              icon                    =   "fa fa-product-hunt",
+ *              enable_push_created     =    false,
+ *              enable_push_deleted     =    false,
+ *              target                  =   "Databases\OsPosBundle\Entity\OsposItems",
+ *              transformer_service     =   "splash.databases.ospos.transformer"
+ * )
+ * 
+ * @ORM\HasLifecycleCallbacks
+ * 
  */
 class OsposItems
 {
+    use ItemPriceTrait;
+    
     /**
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255, nullable=false)
+     * 
+     * @SPL\Field(  
+     *          id      =   "name",
+     *          type    =   "varchar",
+     *          name    =   "Name",
+     *          itemtype=   "http://schema.org/Product", itemprop="name",
+     *          inlist  =   true,
+     *          required=   true,
+     * )
+     * 
      */
     private $name;
 
@@ -30,6 +60,15 @@ class OsposItems
      * @var string
      *
      * @ORM\Column(name="item_number", type="string", length=255, nullable=true)
+     * 
+     * @SPL\Field(  
+     *          id      =   "itemNumber",
+     *          type    =   "varchar",
+     *          name    =   "Reference",
+     *          itemtype=   "http://schema.org/Product", itemprop="model",
+     *          inlist  =   true,
+     * )
+     * 
      */
     private $itemNumber;
 
@@ -37,22 +76,32 @@ class OsposItems
      * @var string
      *
      * @ORM\Column(name="description", type="string", length=255, nullable=false)
+     * 
+     * @SPL\Field(  
+     *          id      =   "description",
+     *          type    =   "varchar",
+     *          name    =   "Item Description",
+     *          itemtype=   "http://schema.org/Product", itemprop="description",
+     *          asso    =   { "name" },
+     * )
+     * 
      */
-    private $description;
+    private $description = "";
 
     /**
      * @var string
      *
      * @ORM\Column(name="cost_price", type="decimal", precision=15, scale=2, nullable=false)
+     * 
+     * @SPL\Field(  
+     *          id      =   "costPrice",
+     *          type    =   "double",
+     *          name    =   "Cost Price",
+     *          itemtype=   "http://schema.org/Product", itemprop="wholesalePrice",
+     * )
+     * 
      */
-    private $costPrice;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="unit_price", type="decimal", precision=15, scale=2, nullable=false)
-     */
-    private $unitPrice;
+    private $costPrice  = 0.0;
 
     /**
      * @var string
@@ -80,14 +129,14 @@ class OsposItems
      *
      * @ORM\Column(name="allow_alt_description", type="boolean", nullable=false)
      */
-    private $allowAltDescription;
+    private $allowAltDescription = False;
 
     /**
      * @var boolean
      *
      * @ORM\Column(name="is_serialized", type="boolean", nullable=false)
      */
-    private $isSerialized;
+    private $isSerialized = False;
 
     /**
      * @var boolean
@@ -229,7 +278,24 @@ class OsposItems
         $this->location = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
+    //====================================================================//
+    // Splash Specific Getters & Setters
+    //====================================================================//
 
+    /**
+     * get Object Id
+     *
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->getItemId();
+    }
+
+    //====================================================================//
+    // Simple Getters & Setters
+    //====================================================================//
+        
     /**
      * Set name
      *
@@ -348,30 +414,6 @@ class OsposItems
     public function getCostPrice()
     {
         return $this->costPrice;
-    }
-
-    /**
-     * Set unitPrice
-     *
-     * @param string $unitPrice
-     *
-     * @return OsposItems
-     */
-    public function setUnitPrice($unitPrice)
-    {
-        $this->unitPrice = $unitPrice;
-
-        return $this;
-    }
-
-    /**
-     * Get unitPrice
-     *
-     * @return string
-     */
-    public function getUnitPrice()
-    {
-        return $this->unitPrice;
     }
 
     /**

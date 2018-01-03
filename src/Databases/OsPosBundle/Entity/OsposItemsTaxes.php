@@ -28,7 +28,7 @@ class OsposItemsTaxes
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="NONE")
      */
-    private $percent;
+    private $percent = 0;
 
     /**
      * @var \Databases\OsPosBundle\Entity\OsposItems

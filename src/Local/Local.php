@@ -75,32 +75,27 @@ class Local extends BaseLocalClass
     public function Parameters()
     {
         $Parameters       =     array();
+        
         //====================================================================//
-        //  No WebSite Given
-        if ( is_null($this->site) && (!is_null($this->getContainer()))) {
-            //====================================================================//
-            //  During Tests
-            if ($this->getContainer()->getParameter("kernel.environment") == 'test' ) {
-                $Websites   =   $this->getContainer()->get("doctrine")->getRepository("WebSiteBundle:Site")->findByEnabled(1);
-                $this->site    =   array_shift($Websites);
-            }
-        }
+        //  Safety Check - Ensure Container is Loaded
         if ( is_null($this->getContainer()) ) {
             throw new \Exception("No Container");
         }
+        //====================================================================//
+        //  Init Parameters For PhpUnit Test
         if ( is_null($this->site) ) {
-//echo "No WebSite" . "\n";
-throw new \Exception("No WebSite");
-//exit;
-            $Parameters["WsIdentifier"]         =   "NoUse";
-            $Parameters["WsEncryptionKey"]      =   "NoUse";
+            $this->InitForTesting();
+        }
+        //====================================================================//
+        //  No Site Already Selected => Empty parameters
+        if ( is_null($this->site) ) {
+//            throw new \Exception("No WebSite");   // For Debug Purpose Only
             return $Parameters;
         }
         //====================================================================//
         // Server Identification Parameters
         $Parameters["WsIdentifier"]         =   $this->site->getAccountId();
         $Parameters["WsEncryptionKey"]      =   $this->site->getAccountKey();
-        
         //====================================================================//
         // If Expert Mode => Overide of Server Host Address
         if ( !empty($this->site->getExpertMode()) ) {
@@ -118,38 +113,8 @@ throw new \Exception("No WebSite");
             || (Splash::Input("SCRIPT_NAME") === "bin/console" ) ){
             $Parameters["ServerHost"]      =   "localhost";
         }        
-//var_dump($Parameters);  
         return $Parameters;
-    }    
-
-    /**
-     *      @abstract       Include Local Includes Files
-     * 
-     *      Include here any local files required by local functions. 
-     *      This Function is called each time the module is loaded 
-     * 
-     *      There may be differents scenarios depending if module is 
-     *      loaded as a library or as a NuSOAP Server. 
-     * 
-     *      This is triggered by global constant SPLASH_SERVER_MODE.
-     * 
-     *      @return         bool                     
-     */
-    public function Includes()
-    {
-        //====================================================================//
-        //  No WebSite Given
-        if ( is_null($this->site) && (!is_null($this->getContainer()))) {
-            //====================================================================//
-            //  During Tests
-            if ( $this->getContainer()->getParameter("kernel.environment") == 'test' ) {
-                $Websites   =   $this->getContainer()->get("doctrine")->getRepository("WebSiteBundle:Site")->findByEnabled(1);
-                $this->site    =   array_shift($Websites);
-            }
-        }
-        
-        return True;
-    }   
+    }  
     
     /**
      *      @abstract       Return Local Server Self Test Result
@@ -176,7 +141,11 @@ throw new \Exception("No WebSite");
         if ( empty($this->getContainer()) ) {
             return Splash::Log()->Err("ErrNoContainer");
         }        
-        
+        //====================================================================//
+        //  Init Parameters For PhpUnit Test
+        if ( is_null($this->site) ) {
+            $this->InitForTesting();
+        }        
         //====================================================================//
         //  Verify - Server Identifier Given
         if ( empty($this->site->getAccountId()) ) {
@@ -252,72 +221,36 @@ throw new \Exception("No WebSite");
      * 
      *      @return         array       $Sequences
      */    
-    public static function TestSequences($Name = Null)
+    public function TestSequences($Name = Null)
     {
-////        static::bootKernel();
-////        $KernelClass    =   \Splash\Bundle\Tests\Core\C01ClassesTest::getKernelClass();
-////        
-////        $Kernel new static::$class(
-////            isset($options['environment']) ? $options['environment'] : 'test',
-////            isset($options['debug']) ? $options['debug'] : true
-////        );
-//        
-////        $WebSites = static::$kernel->getContainer()->get('doctrine');
-////        ->get('doctrine')->getRepository('WebSiteBundle:Site')->findAll();
-//        
-////        $WebSites = static::$kernel->getContainer()->get('doctrine')->getRepository('WebSiteBundle:Site')->findAll();
-//        
-////echo count($WebSites);
-//echo 'SEQUENCES';
-
-//        foreach ($WebSites  as $WebSite) {
-//            echo $WebSite->getName();
-//        }                
-
         switch($Name) {
             
-            case "ProductVATIncluded":
-                update_option("woocommerce_prices_include_tax", "yes");
-                update_option("splash_multilang", "on");
-                return;
-                
-            case "Monolangual":
-                update_option("woocommerce_prices_include_tax", "no");
-                update_option("splash_multilang", "off");
-                return;
-            
-            case "Multilangual":
-                update_option("woocommerce_prices_include_tax", "no");
-                update_option("splash_multilang", "on");
-                return;
-            
             case "List":
+                //====================================================================//
+                // Get List of Active WebSites
+                $WebSites = $this->getContainer()->get('doctrine')->getRepository('WebSiteBundle:Site')->findAll();
+//                echo 'Init : Found ' . count($WebSites) . " Active Websites \n";
+                //====================================================================//
+                // Build List of WebSites
+                $Response = array();
+                foreach ($WebSites as $Website) {
+                    $Response[] =   $Website->__toString();
+                    
+                }
+                return $Response;
                 
-
-
-                return array( "ProductVATIncluded" ,"Monolangual", "Multilangual" );
-                
+            default:
+                //====================================================================//
+                // Load Selected WebSite
+                $WebSite = $this->getContainer()->get('doctrine')->getRepository('WebSiteBundle:Site')->findOneBySiteName($Name);
+                $this->Boot($this->getContainer(),$WebSite);
+//                echo 'Init : Found ' . count(Splash::Objects()) . " Objects on Site " . $Name . " \n";
+                return;
+            
         }
     }  
     
-//====================================================================//
-// *******************************************************************//
-//  OVERRIDING CORE MODULE LOCAL FUNCTIONS
-// *******************************************************************//
-//====================================================================//    
-    
-    /**
-     *      @abstract   Build list of Available Objects
-     * 
-     *      @return     array       $list           list array including all available Objects Type 
-     */
-    public function Objects()
-    {
-        //====================================================================//
-        // Load Objects Type List
-        return $this->Object()->getAnnotationManager()->getObjectsTypes();
-    }
-    
+  
 //====================================================================//
 //  VARIOUS LOW LEVEL FUNCTIONS
 //====================================================================//
@@ -349,14 +282,48 @@ throw new \Exception("No WebSite");
         $this->config       =   $this->getContainer()->getParameter("splash");
         //====================================================================//
         // Setup Annotations Manager
-        $WebSiteManager     =    $container->get('splash.website.manager');
-        $this->_am = new Annotations(
-                $WebSiteManager->getEntityManager($WebSite),
-                Null,
-                $WebSiteManager->getObjects($WebSite)
-            );        
-        
+        $this->SetupAnnotations();
     }
+    
+    private function SetupAnnotations() {
+        //====================================================================//
+        //  Check No WebSite Already Selected
+        if ( is_null($this->site) || (is_null($this->getContainer()))) {
+            return;
+        }
+        //====================================================================//
+        // Setup Objects Annotations Manager
+        $WebSiteManager     =    $this->getContainer()->get('splash.website.manager');
+        $this->_am = new Annotations(
+                $WebSiteManager->getEntityManager($this->site),
+                Null,
+                $WebSiteManager->getObjects($this->site)
+            );        
+        //====================================================================//
+        // Setup Widgets Annotations Manager
+        $this->_wm = new WidgetAnnotations($WebSiteManager->getWidgets($this->site));        
+    }
+    
+    private function InitForTesting() {
+        //====================================================================//
+        //  Check No WebSite Already Selected
+        if ( !is_null($this->site) || (is_null($this->getContainer()))) {
+            return;
+        }
+        //====================================================================//
+        //  Select First WebSite for Basic Tests
+        if ($this->getContainer()->getParameter("kernel.environment") == 'test' ) {
+            $this->site     =   $this->getContainer()->get("doctrine")->getRepository("WebSiteBundle:Site")->findOneByEnabled(1);
+            //====================================================================//
+            // Setup Annotations Manager
+            $this->SetupAnnotations();
+        }        
+    }
+    
+    public function getWebSite() {
+        return $this->site;
+    }
+    
     
 }
 

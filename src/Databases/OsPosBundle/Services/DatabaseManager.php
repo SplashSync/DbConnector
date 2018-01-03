@@ -23,6 +23,7 @@ namespace Databases\OsPosBundle\Services;
 use WebSiteBundle\Models\BaseDatabaseService;
 use WebSiteBundle\Models\DatabaseServiceInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
+use Doctrine\ORM\EntityManager;
 
 /**
  * @abstract    OsPos DatabaseManager
@@ -33,6 +34,17 @@ class DatabaseManager extends BaseDatabaseService implements DatabaseServiceInte
     const NAME      =   'OpenSource POS';
     const VERSION   =   '0.0.1';
 
+    /**
+     * @var EntityManager
+     */
+    private $Em     =   Null;
+    
+    public function __construct(EntityManager $EntityManager) {
+        
+        $this->Em   =   $EntityManager;
+        
+    }
+    
     public function onDatabaseListAction(GenericEvent $Event) {
         
         
@@ -47,7 +59,22 @@ class DatabaseManager extends BaseDatabaseService implements DatabaseServiceInte
             //==============================================================================
             //  Objects to Sync
             'Objects'                   => array(
-                'Databases\OsPosBundle\Entity\OsposCustomers'
+//                'Databases\OsPosBundle\Entity\OsposCustomers',
+                'Databases\OsPosBundle\Entity\OsposItems',
+            ),
+            //==============================================================================
+            //  Triggers => List of Objects to Monitor
+            'Triggers'                   => array(
+//                "ThirdParty"    =>  array( 
+//                    "ObjectType"    =>  "thirdparty",
+//                    "Table"         =>  "ospos_customers",
+//                    "IdField"       =>  "person_id",
+//                    ),
+                "Products"    =>  array( 
+                    "ObjectType"    =>  "product",
+                    "Table"         =>  "ospos_items",
+                    "IdField"       =>  "item_id",
+                    ),
             ),
             //==============================================================================
             //  Widgets to Sync
@@ -58,5 +85,38 @@ class DatabaseManager extends BaseDatabaseService implements DatabaseServiceInte
         $Event[ self::CODE ]  = $this->validateListingArray($Definition);
         
     }
+    
+    public function onEditFormAction(GenericEvent $Event) {
+        
+        //==============================================================================
+        //  Check if Current Database Type
+        if ( $Event->getSubject()->getAdmin()->getSubject()->getServerType() !== self::CODE ) {
+            return;
+        }
+        
+        //==============================================================================
+        //  Populate WebSite Form
+        $formMapper = $Event->getSubject();
+        
+        $formMapper
+                
+            ->tab('OsPos Options') 
+                ->with('Products Config.', array('class' => 'col-md-6'))
+                
+                    ->add('items_default_category', 'text', array(
+                        'property_path'         => 'settings[items_default_category]',
+                        'required'              => True,
+                        'label'                 => "Default Category Name",
+                        'translation_domain'    => False,
+                        'label_render'          => False,
+                    ))
+                
+                ->end()      
+            ->end()
+                
+            ;
+        
+    }
+    
         
 }

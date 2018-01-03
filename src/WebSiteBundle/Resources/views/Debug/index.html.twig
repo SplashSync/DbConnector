@@ -51,7 +51,7 @@
             <div class="text-center" >
                 {% if (Widgets | length) == 1 %}
                     <h3 >
-                        <a href="{{ path("splash_debug_soap") }}" class="btn btn-warning" >
+                        <a href="{{ path("splash_website_debug", { 'SiteId' : WebSite.id}) }}" class="btn btn-warning" >
                             <i class="fa fa-backward fa-fw" aria-hidden="true"></i>
                         </a>
                         {{ Widgets[0] }}
@@ -60,7 +60,7 @@
                 {% else %}
                     <h3>Found Widgets</h3>
                     {% for WidgetType in Widgets %}
-                        <a href="{{ path("splash_debug_soap_filtered", {"Type" : WidgetType} ) }}" class="btn btn-success" >
+                        <a href="{{ path("splash_website_debug_filtered", { 'SiteId' : WebSite.id, "Type" : WidgetType} ) }}" class="btn btn-success" >
                             {{ WidgetType }}
                         </a>
                     {% endfor %}

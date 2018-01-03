@@ -8,6 +8,7 @@ use WebSiteBundle\Traits\SiteDatabaseTrait;
 use WebSiteBundle\Traits\SiteInformationsTrait;
 use WebSiteBundle\Traits\EntityLifeCycleTrait;
 use WebSiteBundle\Traits\SiteAccountingTrait;
+use WebSiteBundle\Traits\SettingsTrait;
 
 /**
  * Site
@@ -23,6 +24,7 @@ class Site
     use SiteInformationsTrait;
     use SiteDatabaseTrait;
     use EntityLifeCycleTrait;
+    use SettingsTrait;
     
     /**
      * @var int
