@@ -71,7 +71,7 @@ class DatabaseManager extends BaseDatabaseService implements DatabaseServiceInte
 //                    "IdField"       =>  "person_id",
 //                    ),
                 "Products"    =>  array( 
-                    "ObjectType"    =>  "product",
+                    "ObjectType"    =>  "Product",
                     "Table"         =>  "ospos_items",
                     "IdField"       =>  "item_id",
                     ),
