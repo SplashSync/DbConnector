@@ -25,6 +25,7 @@ use WebSiteBundle\Models\DatabaseServiceInterface;
 use Symfony\Component\EventDispatcher\GenericEvent;
 use Doctrine\ORM\EntityManager;
 
+
 /**
  * @abstract    OsPos DatabaseManager
  */
@@ -32,18 +33,8 @@ class DatabaseManager extends BaseDatabaseService implements DatabaseServiceInte
 
     const CODE      =   'OsPos';
     const NAME      =   'OpenSource POS';
-    const VERSION   =   '0.0.1';
+    const VERSION   =   '0.0.1';  
 
-    /**
-     * @var EntityManager
-     */
-    private $Em     =   Null;
-    
-    public function __construct(EntityManager $EntityManager) {
-        
-        $this->Em   =   $EntityManager;
-        
-    }
     
     public function onDatabaseListAction(GenericEvent $Event) {
         
@@ -88,12 +79,26 @@ class DatabaseManager extends BaseDatabaseService implements DatabaseServiceInte
     
     public function onEditFormAction(GenericEvent $Event) {
         
+        $Site   =   $Event->getSubject()->getAdmin()->getSubject();
+        
         //==============================================================================
         //  Check if Current Database Type
-        if ( $Event->getSubject()->getAdmin()->getSubject()->getServerType() !== self::CODE ) {
+        if ( $Site->getServerType() !== self::CODE ) {
             return;
         }
-        
+
+        //==============================================================================
+        //  Read List of Available Warehouses
+        $Warehouses = $this->getEntityManager( $Site )->getRepository("OsPosBundle:OsposStockLocations")->findAll();
+        $WareHouseChoices   =   array();
+        foreach ($Warehouses as $Warehouse) {
+            if ($Warehouse->getDeleted()) {
+                continue;
+            } 
+            $WareHouseChoices[$Warehouse->getLocationName()]    =   $Warehouse->getLocationId();
+        }
+dump($WareHouseChoices);
+
         //==============================================================================
         //  Populate WebSite Form
         $formMapper = $Event->getSubject();
@@ -110,6 +115,15 @@ class DatabaseManager extends BaseDatabaseService implements DatabaseServiceInte
                         'translation_domain'    => False,
                         'label_render'          => False,
                     ))
+
+                    ->add('items_default_stock', 'choice', array(
+                        'property_path'         => 'settings[items_default_location]',
+                        'choices'               => $WareHouseChoices,
+                        'required'              => True,
+                        'label'                 => "Stcok Location to Use",
+                        'translation_domain'    => False,
+                        'label_render'          => False,
+                    ))                
                 
                 ->end()      
             ->end()

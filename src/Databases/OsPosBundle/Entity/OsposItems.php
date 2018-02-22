@@ -231,20 +231,6 @@ class OsposItems
      */
     private $supplier;
 
-    /**
-     * @var \Doctrine\Common\Collections\Collection
-     *
-     * @ORM\ManyToMany(targetEntity="Databases\OsPosBundle\Entity\OsposStockLocations", inversedBy="item")
-     * @ORM\JoinTable(name="ospos_item_quantities",
-     *   joinColumns={
-     *     @ORM\JoinColumn(name="item_id", referencedColumnName="item_id")
-     *   },
-     *   inverseJoinColumns={
-     *     @ORM\JoinColumn(name="location_id", referencedColumnName="location_id")
-     *   }
-     * )
-     */
-    private $location;
 
     /**
      * Constructor
@@ -837,37 +823,4 @@ class OsposItems
         return $this->supplier;
     }
 
-    /**
-     * Add location
-     *
-     * @param \Databases\OsPosBundle\Entity\OsposStockLocations $location
-     *
-     * @return OsposItems
-     */
-    public function addLocation(\Databases\OsPosBundle\Entity\OsposStockLocations $location)
-    {
-        $this->location[] = $location;
-
-        return $this;
-    }
-
-    /**
-     * Remove location
-     *
-     * @param \Databases\OsPosBundle\Entity\OsposStockLocations $location
-     */
-    public function removeLocation(\Databases\OsPosBundle\Entity\OsposStockLocations $location)
-    {
-        $this->location->removeElement($location);
-    }
-
-    /**
-     * Get location
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getLocation()
-    {
-        return $this->location;
-    }
 }

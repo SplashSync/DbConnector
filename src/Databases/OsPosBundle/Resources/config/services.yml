@@ -8,7 +8,7 @@ services:
             - { name: kernel.event_listener,    event: splash.databases.list,       method: onDatabaseListAction }
             - { name: kernel.event_listener,    event: splash.databases.editform,    method: onEditFormAction }
         arguments:
-            - "@doctrine.orm.website_entity_manager"
+            - "@splash.website.manager"
 #            - "@doctrine.orm.entity_manager"
 #            - WebSiteBundle\Entity\Commits
 #            - ~

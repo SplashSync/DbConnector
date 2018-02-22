@@ -23,6 +23,7 @@ namespace Databases\OsPosBundle\Entity\Products;
 use Doctrine\ORM\Mapping as ORM;
 use Splash\Bundle\Annotation as SPL;
 
+use Splash\Core\SplashCore  as Splash;
 /**
  * @abstract    OsPos Product Stock Trait
  */
@@ -58,6 +59,21 @@ trait ItemStocksTrait {
     private $stock;
     
     /**
+     * @var \Doctrine\Common\Collections\Collection
+     *
+     * @ORM\ManyToMany(targetEntity="Databases\OsPosBundle\Entity\OsposStockLocations", inversedBy="item")
+     * @ORM\JoinTable(name="ospos_item_quantities",
+     *   joinColumns={
+     *     @ORM\JoinColumn(name="item_id", referencedColumnName="item_id")
+     *   },
+     *   inverseJoinColumns={
+     *     @ORM\JoinColumn(name="location_id", referencedColumnName="location_id")
+     *   }
+     * )
+     */
+    private $location;    
+    
+    /**
      * Set Stock
      *
      * @param int $level
@@ -78,8 +94,49 @@ trait ItemStocksTrait {
      */
     public function getStock()
     {
+  
+dump($this->getLocation()->toArray());
+
+dump(Splash::Local()->getWebsite()->getSetting("items_default_location"));
+        
+
+//Splash::Log()->www("Locations" , $this->getLocation() );        
+//Splash::Log()->www("Local" , Splash::Local()->getWebsite()->getName() );        
         return $this->stock;
     }
-    
+
+    /**
+     * Add location
+     *
+     * @param \Databases\OsPosBundle\Entity\OsposStockLocations $location
+     *
+     * @return OsposItems
+     */
+    public function addLocation(\Databases\OsPosBundle\Entity\OsposStockLocations $location)
+    {
+        $this->location[] = $location;
+
+        return $this;
+    }
+
+    /**
+     * Remove location
+     *
+     * @param \Databases\OsPosBundle\Entity\OsposStockLocations $location
+     */
+    public function removeLocation(\Databases\OsPosBundle\Entity\OsposStockLocations $location)
+    {
+        $this->location->removeElement($location);
+    }
+
+    /**
+     * Get location
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getLocation()
+    {
+        return $this->location;
+    }
     
 }

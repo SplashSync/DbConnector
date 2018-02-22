@@ -21,6 +21,10 @@ namespace WebSiteBundle\Models;
 
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+use WebSiteBundle\Services\WebSiteManager;
+
+use WebSiteBundle\Entity\Site;
+
 /**
  * @abstract    Core Databases Connectors Service Functions
  * @author Splash Sync       <contact@splashsync.com>
@@ -54,6 +58,15 @@ abstract class BaseDatabaseService {
     private $ServiceRequired       = array('code', 'name', 'version');
     
     /**
+     * @var WebSiteManager
+     */
+    private $Manager     =   Null;    
+    
+    public function __construct(WebSiteManager $WebSiteManager) {
+        $this->Manager   =   $WebSiteManager;
+    }
+    
+    /**
      * Validate & Complete Database Listing Array
      *
      * @param array $settings
@@ -73,4 +86,14 @@ abstract class BaseDatabaseService {
         return $resolver->resolve($settings);
     }
     
+    /**
+     * @abstract    Get Website Dedicated Entity Manager
+     * 
+     * @param Site $WebSite
+     * 
+     * @return EntityManager
+     */
+    public function getEntityManager( Site $WebSite ) {
+        return $this->Manager->getEntityManager($WebSite);
+    }    
 }
