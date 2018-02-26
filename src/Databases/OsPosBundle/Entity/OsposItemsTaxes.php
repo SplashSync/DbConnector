@@ -17,7 +17,6 @@ class OsposItemsTaxes
      *
      * @ORM\Column(name="name", type="string", length=255)
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
      */
     private $name;
 
@@ -26,7 +25,6 @@ class OsposItemsTaxes
      *
      * @ORM\Column(name="percent", type="decimal")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
      */
     private $percent = 0;
 
@@ -34,7 +32,6 @@ class OsposItemsTaxes
      * @var \Databases\OsPosBundle\Entity\OsposItems
      *
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="NONE")
      * @ORM\OneToOne(targetEntity="Databases\OsPosBundle\Entity\OsposItems")
      * @ORM\JoinColumns({
      *   @ORM\JoinColumn(name="item_id", referencedColumnName="item_id")

@@ -97,8 +97,7 @@ class DatabaseManager extends BaseDatabaseService implements DatabaseServiceInte
             } 
             $WareHouseChoices[$Warehouse->getLocationName()]    =   $Warehouse->getLocationId();
         }
-dump($WareHouseChoices);
-
+        
         //==============================================================================
         //  Populate WebSite Form
         $formMapper = $Event->getSubject();

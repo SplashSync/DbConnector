@@ -24,27 +24,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Splash\Bundle\Annotation as SPL;
 
 use Splash\Core\SplashCore  as Splash;
+
 /**
  * @abstract    OsPos Product Stock Trait
  */
 trait ItemStocksTrait {
 
-//    /**
-//     * @var int
-//     * 
-//     * @ORM\ManyToMany(targetEntity="Databases\OsPosBundle\Entity\OsposStockLocations", inversedBy="item")
-//     * @ORM\JoinTable(name="ospos_item_quantities",
-//     *   joinColumns={
-//     *     @ORM\JoinColumn(name="item_id", referencedColumnName="item_id")
-//     *   },
-//     *   inverseJoinColumns={
-//     *     @ORM\JoinColumn(name="location_id", referencedColumnName="location_id")
-//     *   }
-//     * )
-//     * 
-//     */
-//    private $stocks;
-    
     /**
      * @var int
      * 
@@ -61,7 +46,7 @@ trait ItemStocksTrait {
     /**
      * @var \Doctrine\Common\Collections\Collection
      *
-     * @ORM\ManyToMany(targetEntity="Databases\OsPosBundle\Entity\OsposStockLocations", inversedBy="item")
+     * @ORM\ManyToMany(targetEntity="Databases\OsPosBundle\Entity\OsposStockLocations", inversedBy="item", indexBy="locationId")
      * @ORM\JoinTable(name="ospos_item_quantities",
      *   joinColumns={
      *     @ORM\JoinColumn(name="item_id", referencedColumnName="item_id")
@@ -74,6 +59,32 @@ trait ItemStocksTrait {
     private $location;    
     
     /**
+     * Get Stock
+     *
+     * @return integer
+     */
+    private function loadStock()
+    {
+        //==============================================================================
+        // Load Selected Stock Location
+        $LocationId     =   Splash::Local()->getWebsite()->getSetting("items_default_location");
+        if ( empty($LocationId) ) {
+            return Null;
+        }
+        //==============================================================================
+        // Direct Loading of Stock Form Database
+        $rawSql = "SELECT * FROM `ospos_item_quantities` WHERE `item_id` = " . $this->itemId . " AND `location_id` = " . $LocationId;
+        $stmt = Splash::Local()->getEntityManager()->getConnection()->prepare($rawSql);
+        $stmt->execute([]);
+        $Results = $stmt->fetch();
+        if ( !array_key_exists("quantity", $Results ) ) {
+            return Null;
+        }
+
+        return (int) $Results["quantity"];
+    }
+    
+    /**
      * Set Stock
      *
      * @param int $level
@@ -82,11 +93,38 @@ trait ItemStocksTrait {
      */
     public function setStock($level)
     {
-        $this->stock = $level;
+        //==============================================================================
+        // Direct Loading of Stock Form Database
+        $Stock  =   $this->loadStock();
+        //==============================================================================
+        // Compare Values
+        if ( !is_null($Stock) && ($Stock === $level) ) {
+            return $this;   
+        }
 
+        //==============================================================================
+        // Load Selected Stock Location
+        $LocationId     =   Splash::Local()->getWebsite()->getSetting("items_default_location");
+        if ( empty($LocationId) ) {
+            return $this;
+        }
+        
+        //==============================================================================
+        // Create Create Stock Quantity Query
+        if (is_null($Stock) ) {
+            $rawSql = "INSERT INTO `ospos_item_quantities` (`item_id`, `location_id`, `quantity`) VALUES ('" . $this->itemId . "', '" . $LocationId . "', '" . (float) trim($level) . "');";
+        //==============================================================================
+        // Create Update Stock Quantity Query
+        } else {
+            $rawSql = "UPDATE `ospos_item_quantities` SET `quantity` = '" . (float) trim($level) . "' WHERE `ospos_item_quantities`.`item_id` = " . $this->itemId . " AND `ospos_item_quantities`.`location_id` = " . $LocationId . ";";
+        }
+        //==============================================================================
+        // Execute Query
+        Splash::Local()->getEntityManager()->getConnection()->prepare($rawSql)->execute([]);
+        
         return $this;
     }
-
+    
     /**
      * Get Stock
      *
@@ -94,49 +132,13 @@ trait ItemStocksTrait {
      */
     public function getStock()
     {
-  
-dump($this->getLocation()->toArray());
+        //==============================================================================
+        // Direct Loading of Stock Form Database
+        $Stock  =   $this->loadStock();
+        if (is_null($Stock) ) {
+            return 0;
+        }
 
-dump(Splash::Local()->getWebsite()->getSetting("items_default_location"));
-        
-
-//Splash::Log()->www("Locations" , $this->getLocation() );        
-//Splash::Log()->www("Local" , Splash::Local()->getWebsite()->getName() );        
-        return $this->stock;
+        return (int) $Stock;
     }
-
-    /**
-     * Add location
-     *
-     * @param \Databases\OsPosBundle\Entity\OsposStockLocations $location
-     *
-     * @return OsposItems
-     */
-    public function addLocation(\Databases\OsPosBundle\Entity\OsposStockLocations $location)
-    {
-        $this->location[] = $location;
-
-        return $this;
-    }
-
-    /**
-     * Remove location
-     *
-     * @param \Databases\OsPosBundle\Entity\OsposStockLocations $location
-     */
-    public function removeLocation(\Databases\OsPosBundle\Entity\OsposStockLocations $location)
-    {
-        $this->location->removeElement($location);
-    }
-
-    /**
-     * Get location
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getLocation()
-    {
-        return $this->location;
-    }
-    
 }

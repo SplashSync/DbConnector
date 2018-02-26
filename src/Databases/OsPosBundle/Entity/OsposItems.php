@@ -237,7 +237,9 @@ class OsposItems
      */
     public function __construct()
     {
-        $this->location = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->location     = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->stocks       = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->itemTaxes    = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     //====================================================================//
