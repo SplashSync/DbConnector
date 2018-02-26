@@ -34,6 +34,8 @@ use Splash\Local\Objects\Annotations;
 
 use Splash\Local\Widgets\Annotations    as  WidgetAnnotations;
 
+use Doctrine\ORM\EntityManager;
+
 //====================================================================//
 //  CONSTANTS DEFINITION
 //====================================================================//
@@ -52,6 +54,11 @@ class Local extends BaseLocalClass
      */
     private $site       = Null;
 
+    /**
+     * @var EntityManager
+     */
+    private $_em;
+    
 //====================================================================//
 // *******************************************************************//
 //  MANDATORY CORE MODULE LOCAL FUNCTIONS
@@ -324,6 +331,23 @@ class Local extends BaseLocalClass
         return $this->site;
     }
     
+    /**
+     * @abstract    Get Website Dedicated Entity Manager
+     * 
+     * @param Site $WebSite
+     * 
+     * @return EntityManager
+     */
+    public function getEntityManager() {
+        
+        if ( !$this->_em ) {
+            //==============================================================================
+            // Create Entity Manager for a WebSite
+            $this->_em= $this->getContainer()->get('splash.website.manager')->getEntityManager($this->site);
+        }         
+        
+        return $this->_em;
+    }    
     
 }
 
