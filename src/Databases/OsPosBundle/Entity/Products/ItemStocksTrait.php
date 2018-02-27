@@ -25,13 +25,18 @@ use Splash\Bundle\Annotation as SPL;
 
 use Splash\Core\SplashCore  as Splash;
 
+use Databases\OsPosBundle\Entity\OsposItemsQuantities;
+use Databases\OsPosBundle\Entity\OsposInventory;
+
 /**
  * @abstract    OsPos Product Stock Trait
  */
 trait ItemStocksTrait {
 
     /**
-     * @var int
+     * @var Array
+     *
+     * @ORM\OneToMany(targetEntity="Databases\OsPosBundle\Entity\OsposItemsQuantities", cascade={"persist", "remove"}, mappedBy="item")
      * 
      * @SPL\Field(  
      *          id      =   "stock",
@@ -41,48 +46,21 @@ trait ItemStocksTrait {
      * )
      * 
      */
-    private $stock;
+    private $stocks;
+    
     
     /**
-     * @var \Doctrine\Common\Collections\Collection
+     * @var Array
      *
-     * @ORM\ManyToMany(targetEntity="Databases\OsPosBundle\Entity\OsposStockLocations", inversedBy="item", indexBy="locationId")
-     * @ORM\JoinTable(name="ospos_item_quantities",
-     *   joinColumns={
-     *     @ORM\JoinColumn(name="item_id", referencedColumnName="item_id")
-     *   },
-     *   inverseJoinColumns={
-     *     @ORM\JoinColumn(name="location_id", referencedColumnName="location_id")
-     *   }
-     * )
+     * @ORM\OneToMany(targetEntity="Databases\OsPosBundle\Entity\OsposInventory", cascade={"persist", "remove"}, mappedBy="transItems")
+     * 
      */
-    private $location;    
+    private $inventory;
     
     /**
-     * Get Stock
-     *
-     * @return integer
+     * @var OsposInventory
      */
-    private function loadStock()
-    {
-        //==============================================================================
-        // Load Selected Stock Location
-        $LocationId     =   Splash::Local()->getWebsite()->getSetting("items_default_location");
-        if ( empty($LocationId) ) {
-            return Null;
-        }
-        //==============================================================================
-        // Direct Loading of Stock Form Database
-        $rawSql = "SELECT * FROM `ospos_item_quantities` WHERE `item_id` = " . $this->itemId . " AND `location_id` = " . $LocationId;
-        $stmt = Splash::Local()->getEntityManager()->getConnection()->prepare($rawSql);
-        $stmt->execute([]);
-        $Results = $stmt->fetch();
-        if ( !array_key_exists("quantity", $Results ) ) {
-            return Null;
-        }
-
-        return (int) $Results["quantity"];
-    }
+    private $new_inventory;
     
     /**
      * Set Stock
@@ -94,33 +72,42 @@ trait ItemStocksTrait {
     public function setStock($level)
     {
         //==============================================================================
-        // Direct Loading of Stock Form Database
-        $Stock  =   $this->loadStock();
+        // Load Selected Stock Location
+        $StockQuantity =  $this->getStockByLocation();
         //==============================================================================
         // Compare Values
-        if ( !is_null($Stock) && ($Stock === $level) ) {
+        if ( !empty( $StockQuantity ) && ($StockQuantity->getQuantity() === $level) ) {
             return $this;   
+        }        
+
+        //==============================================================================
+        // Add Stock Change to Item Inventory
+        $this->addInventoryChange($level, $StockQuantity ); 
+                
+        //==============================================================================
+        // Update Stock Quantity Item
+        if ( !empty( $StockQuantity ) ) {
+            $StockQuantity->setQuantity($level);
+            return $this;
+        }
+            
+        //==============================================================================
+        // Load Default Stock Location
+        if ( empty( Splash::Local()->getWebsite()->getSetting("items_default_location") ) ) {
+            Splash::Log()->War("No default Stock Location Selected, Product Stock NOT Updated");
+            return $this;
         }
 
         //==============================================================================
-        // Load Selected Stock Location
-        $LocationId     =   Splash::Local()->getWebsite()->getSetting("items_default_location");
-        if ( empty($LocationId) ) {
-            return $this;
-        }
-        
-        //==============================================================================
-        // Create Create Stock Quantity Query
-        if (is_null($Stock) ) {
-            $rawSql = "INSERT INTO `ospos_item_quantities` (`item_id`, `location_id`, `quantity`) VALUES ('" . $this->itemId . "', '" . $LocationId . "', '" . (float) trim($level) . "');";
-        //==============================================================================
-        // Create Update Stock Quantity Query
-        } else {
-            $rawSql = "UPDATE `ospos_item_quantities` SET `quantity` = '" . (float) trim($level) . "' WHERE `ospos_item_quantities`.`item_id` = " . $this->itemId . " AND `ospos_item_quantities`.`location_id` = " . $LocationId . ";";
-        }
-        //==============================================================================
-        // Execute Query
-        Splash::Local()->getEntityManager()->getConnection()->prepare($rawSql)->execute([]);
+        // Create Stock Quantity Item
+        $NewStockQuantity  =   new OsposItemsQuantities();
+        $NewStockQuantity
+                ->setItem($this)
+                ->setLocation(Splash::Local()->getWebsite()->getSetting("items_default_location"))
+                ->setQuantity($level)
+                ;
+
+        $this->addStockQuantity( $NewStockQuantity );
         
         return $this;
     }
@@ -132,13 +119,114 @@ trait ItemStocksTrait {
      */
     public function getStock()
     {
-        //==============================================================================
-        // Direct Loading of Stock Form Database
-        $Stock  =   $this->loadStock();
-        if (is_null($Stock) ) {
+        $StockQuantity =  $this->getStockByLocation();
+        if ( empty( $StockQuantity ) ) {
             return 0;
+        }    
+//dump($this->inventory->toArray());
+        return $StockQuantity->getQuantity();
+    }
+    
+    /**
+     * Get Stock Location
+     *
+     * @return OsposItemsQuantities | Null
+     */
+    public function getStockByLocation( $LocationId = Null )
+    {
+        //==============================================================================
+        // Load Selected Stock Location
+        if ( is_null($LocationId) ) {
+            $LocationId     =   Splash::Local()->getWebsite()->getSetting("items_default_location");
+        }        
+        if ( empty($LocationId) ) {
+            return Null;
+        }        
+        //==============================================================================
+        // Search for Stock Quantity Object
+        foreach ($this->stocks as $StockQuantity) {
+            if ( $StockQuantity->getLocation() == $LocationId ) {
+                return $StockQuantity;
+            }
         }
+        return Null;
+    }
+    
+    /**
+     * Add Items Quantities
+     *
+     * @param OsposItemsQuantities $ItemsQuantities
+     *
+     * @return OsposItems
+     */
+    public function addStockQuantity(OsposItemsQuantities $ItemsQuantities)
+    {
+        if ( $this->getId() ) {
+            $this->stocks[]     = $ItemsQuantities;
+        } else {
+            $this->new_stocks[] = $ItemsQuantities;
+        }
+        return $this;
+    }
 
-        return (int) $Stock;
+    /**
+     * Remove Items Quantities
+     *
+     * @param OsposItemsQuantities $ItemsQuantities
+     */
+    public function removeStockQuantity(OsposItemsQuantities $ItemsQuantities)
+    {
+        $this->stocks->removeElement($ItemsQuantities);
+    }    
+    
+    /**
+     * Add Stock Update to Inventory
+     *
+     * @param int                   $Level              New Stock Value
+     * @param OsposItemsQuantities  $ItemsQuantities    Current Stock Quantity
+     *
+     * @return boid
+     */
+    public function addInventoryChange($Level, OsposItemsQuantities $ItemsQuantities = Null ) 
+    {
+        //==============================================================================
+        // Evaluate Quantity Change        
+        if ( $ItemsQuantities ) {
+            $Delta  =  $Level - $ItemsQuantities->getQuantity();  
+        } else {
+            $Delta  =  $Level;  
+        }
+        if( !$Delta ) {
+            return;
+        } 
+        //==============================================================================
+        // Load WebService User
+        if ( empty( Splash::Local()->getWebsite()->getSetting("splash_user") ) ) {
+            Splash::Log()->War("No WebService User Selected, Product Inventory NOT Updated");
+            return;
+        }        
+        //==============================================================================
+        // Load Default Stock Location
+        if ( empty( Splash::Local()->getWebsite()->getSetting("items_default_location") ) ) {
+            Splash::Log()->War("No default Stock Location Selected, Product Stock NOT Updated");
+            return;
+        }
+        //==============================================================================
+        // Create Inventory Object
+        $Inventory  =   new OsposInventory;
+        $Inventory
+                ->setTransItems($this)
+                ->setTransDate(new \DateTime())
+                ->setTransLocation(Splash::Local()->getWebsite()->getSetting("items_default_location"))
+                ->setTransUser(Splash::Local()->getWebsite()->getSetting("splash_user"))
+                ->setTransComment("Updated By Splash Sync")
+                ->setTransInventory($Delta)
+                ;
+        
+        if ( $this->getId() ) {
+            $this->inventory[]      = $Inventory;
+        } else {
+            $this->new_inventory    = $Inventory;
+        }
     }
 }

@@ -53,20 +53,10 @@ trait ItemPriceTrait {
     /**
      * @var Array
      *
-     * @ORM\OneToMany(targetEntity="Databases\OsPosBundle\Entity\OsposItemsTaxes", cascade={"persist", "remove", "merge"}, mappedBy="item")
+     * @ORM\OneToMany(targetEntity="Databases\OsPosBundle\Entity\OsposItemsTaxes", cascade={"persist", "remove"}, mappedBy="item")
      */
-    private $itemTaxes;
-
-//    /**
-//     * @var OsposItemsTaxes
-//     *
-//     * @ORM\OneToOne(targetEntity="Databases\OsPosBundle\Entity\OsposItemsTaxes", cascade={"persist", "remove", "merge"})
-//     * @ORM\JoinColumns({
-//     *   @ORM\JoinColumn(name="item_id", referencedColumnName="item_id")
-//     * })
-//     */
-//    private $itemTax2 = Null;
-    
+    private $taxes;
+   
     /**
      * Set unitPrice
      *
@@ -80,14 +70,14 @@ trait ItemPriceTrait {
         
         //====================================================================//
         // Ensure Tax1 Exists
-        if ( !isset($this->getItemTaxes()[0]) ) {
+        if ( !$this->getTax(0) ) {
             $Tax1   =    new OsposItemsTaxes();
             $Tax1
                     ->setItem($this)
                     ->setName("VAT")
-                    ->setPercent(0)
+                    ->setPercent(self::Prices()->TaxPercent($Price))
                     ;
-            $this->addItemTaxes($Tax1);
+            $this->addTaxes($Tax1);
         }
         //====================================================================//
         // Check Value is Modified
@@ -97,9 +87,11 @@ trait ItemPriceTrait {
         
         //====================================================================//
         // Update Tax Percents
-        $this->getItemTaxes()[0]->setPercent(self::Prices()->TaxPercent($Price));
-        if ( isset($this->getItemTaxes()[1]) ) {
-            $this->getItemTaxes()[1]->setPercent(0);
+        if ( $this->getTax(0) ) {
+            $this->getTax(0)->setPercent(self::Prices()->TaxPercent($Price));
+        }
+        if ( $this->getTax(1) ) {
+            $this->getTax(1)->setPercent(0);
         }
 
         return $this;
@@ -115,20 +107,17 @@ trait ItemPriceTrait {
         //====================================================================//
         // Fetch Items Taxes
         $VAT    =   0;
-        if ( isset($this->getItemTaxes()[0]) ) {
-            $VAT    +=  $this->getItemTaxes()[0]->getPercent();
+        if ( $this->getTax(0) ) {
+            $VAT    +=  $this->getTax(0)->getPercent();
         }
-        if ( isset($this->getItemTaxes()[1]) ) {
-            $VAT    +=  $this->getItemTaxes()[1]->getPercent();
+        if ( $this->getTax(1) ) {
+            $VAT    +=  $this->getTax(1)->getPercent();
         }
-        
         //====================================================================//
         // Encode Price Array
         return self::Prices()->Encode( (double) $this->unitPrice, (double) $VAT, Null, "EUR");
     }
     
-    
-
     /**
      * Add TaxItem
      *
@@ -136,10 +125,14 @@ trait ItemPriceTrait {
      *
      * @return OsposItems
      */
-    public function addItemTaxes(OsposItemsTaxes $ItemTax)
+    public function addTaxes(OsposItemsTaxes $ItemTax)
     {
-        $this->itemTaxes[] = $ItemTax;
-
+        if ( $this->getId() ) {
+            $this->taxes[]      = $ItemTax;
+        } else {
+            $this->new_taxes[]  = $ItemTax;
+        }
+        
         return $this;
     }
 
@@ -148,9 +141,9 @@ trait ItemPriceTrait {
      *
      * @param OsposItemsTaxes $ItemTax
      */
-    public function removeItemTaxes(OsposItemsTaxes $ItemTax)
+    public function removeTaxes(OsposItemsTaxes $ItemTax)
     {
-        $this->itemTaxes->removeElement($ItemTax);
+        $this->taxes->removeElement($ItemTax);
     }
 
     /**
@@ -158,60 +151,22 @@ trait ItemPriceTrait {
      *
      * @return Collection
      */
-    public function getItemTaxes()
+    public function getTaxes()
     {
-//dump($this->itemTaxes->toArray());
-        return $this->itemTaxes;
+        return $this->taxes;
     }
     
-
     /**
-     * Set itemTax1
+     * Get TaxItem
      *
-     * @param OsposItemsTaxes $itemTax
-     *
-     * @return OsposItems
+     * @return OsposItemsTaxes | Null
      */
-    public function setItemTax1($itemTax)
+    public function getTax($Index)
     {
-        $this->itemTax1 = $itemTax;
-
-        return $this;
+        if ( $this->taxes->containsKey($Index) ) {
+            return $this->taxes[$Index];
+        }
+        return Null;
     }
-
-    /**
-     * Get itemTax1
-     *
-     * @return OsposItemsTaxes
-     */
-    public function getItemTax1()
-    {
-        return $this->itemTax1;
-    }
-
-    /**
-     * Set itemTax2
-     *
-     * @param OsposItemsTaxes $itemTax
-     *
-     * @return OsposItems
-     */
-    public function setItemTax2($itemTax)
-    {
-        $this->itemTax2 = $itemTax;
-
-        return $this;
-    }
-
-    /**
-     * Get itemTax2
-     *
-     * @return OsposItemsTaxes
-     */
-    public function getItemTax2()
-    {
-        return $this->itemTax2;
-    }
-
     
 }

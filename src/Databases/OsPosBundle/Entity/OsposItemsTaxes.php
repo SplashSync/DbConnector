@@ -4,19 +4,22 @@ namespace Databases\OsPosBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
+use Databases\OsPosBundle\Entity\OsposItems;
+
 /**
  * OsposItemsTaxes
  *
- * @ORM\Table(name="ospos_items_taxes", indexes={@ORM\Index(name="IDX_B2377A66126F525E", columns={"item_id"})})
  * @ORM\Entity
+ * @ORM\Table(name="ospos_items_taxes")
+ * 
  */
 class OsposItemsTaxes
 {
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255)
      * @ORM\Id
+     * @ORM\Column(name="name", type="string", length=255)
      */
     private $name;
 
@@ -24,22 +27,26 @@ class OsposItemsTaxes
      * @var string
      *
      * @ORM\Column(name="percent", type="decimal")
-     * @ORM\Id
      */
     private $percent = 0;
 
+
+    /**
+     * @var int
+     * 
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="NONE") 
+     * @ORM\Column(name="item_id", type="integer") 
+     */
+    private $item_id;
+    
     /**
      * @var \Databases\OsPosBundle\Entity\OsposItems
-     *
-     * @ORM\Id
-     * @ORM\OneToOne(targetEntity="Databases\OsPosBundle\Entity\OsposItems")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="item_id", referencedColumnName="item_id")
-     * })
+     * 
+     * @ORM\ManyToOne(targetEntity="Databases\OsPosBundle\Entity\OsposItems", inversedBy="itemTaxes")
+     * @ORM\JoinColumn(name="item_id", referencedColumnName="item_id")
      */
     private $item;
-
-
 
     /**
      * Set name
@@ -92,14 +99,14 @@ class OsposItemsTaxes
     /**
      * Set item
      *
-     * @param \Databases\OsPosBundle\Entity\OsposItems $item
+     * @param OsposItems $item
      *
      * @return OsposItemsTaxes
      */
-    public function setItem(\Databases\OsPosBundle\Entity\OsposItems $item)
+    public function setItem(OsposItems $item)
     {
-        $this->item = $item;
-
+        $this->item     =   $item;
+        $this->item_id  =   $item->getId();
         return $this;
     }
 
@@ -112,4 +119,27 @@ class OsposItemsTaxes
     {
         return $this->item;
     }
+    
+    /**
+     * Set item id
+     *
+     * @param int $ItemId
+     *
+     * @return OsposItemsTaxes
+     */
+    public function setItemId($ItemId)
+    {
+        $this->item_id     = $ItemId;
+        return $this;
+    }
+
+    /**
+     * Get item id
+     *
+     * @return OsposItems
+     */
+    public function getItemId()
+    {
+        return $this->item_id;
+    }    
 }

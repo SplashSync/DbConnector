@@ -215,11 +215,11 @@ class OsposItems
     /**
      * @var integer
      *
-     * @ORM\Column(name="item_id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\Column(name="item_id", type="integer")
      */
-    private $itemId;
+    private $id;
 
     /**
      * @var \Databases\OsPosBundle\Entity\OsposSuppliers
@@ -237,9 +237,11 @@ class OsposItems
      */
     public function __construct()
     {
-        $this->location     = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->inventory    = new \Doctrine\Common\Collections\ArrayCollection();
         $this->stocks       = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->itemTaxes    = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->new_stocks   = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->taxes        = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->new_taxes    = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     //====================================================================//
@@ -253,15 +255,57 @@ class OsposItems
      */
     public function getId()
     {
-        return $this->getItemId();
+        return $this->id;
     }
 
+    /**
+     * @abstract    Manually Propagate Persist of Children Objects Uppon Initial Persist 
+     * 
+     * @ORM\PostPersist()
+     */
+    public function postPersist($Args)
+    {
+        //====================================================================//
+        // If Stocks Quantities have been added on a New Item 
+        if ( !empty($this->new_stocks->count() ) ) {
+            //====================================================================//
+            // Setup Item Id & Manually Persist Stock Quantity 
+            foreach ($this->new_stocks as $StockQuantity) {
+                $StockQuantity->setItemId($this->getId());
+                $Args->getEntityManager()->persist($StockQuantity);
+                $Args->getEntityManager()->flush();
+                $this->addStockQuantity($StockQuantity);
+            }
+        } 
+        //====================================================================//
+        // If Item Inventory has been added on a New Item 
+        if ( !empty($this->new_inventory ) ) {
+            //====================================================================//
+            // Setup Item Id & Manually Persist Item Inventory
+            $Args->getEntityManager()->persist($this->new_inventory);
+            $Args->getEntityManager()->flush();
+            $this->inventory[] = $this->new_inventory;
+        }         
+        
+        //====================================================================//
+        // If Taxes have been added on a New Item 
+        if ( !empty($this->new_taxes->count() ) ) {
+            //====================================================================//
+            // Setup Item Id & Manually Persist Tax 
+            foreach ($this->new_taxes as $ItemTax) {
+                $ItemTax->setItemId($this->getId());
+                $Args->getEntityManager()->persist($ItemTax);
+                $Args->getEntityManager()->flush();
+                $this->addTaxes($ItemTax);
+            }
+        }         
+        return $this;
+    }
+    
     //====================================================================//
     // Simple Getters & Setters
     //====================================================================//
-        
-
-
+    
     /**
      * Set category
      *
@@ -789,16 +833,6 @@ class OsposItems
     public function getCustom10()
     {
         return $this->custom10;
-    }
-
-    /**
-     * Get itemId
-     *
-     * @return integer
-     */
-    public function getItemId()
-    {
-        return $this->itemId;
     }
 
     /**

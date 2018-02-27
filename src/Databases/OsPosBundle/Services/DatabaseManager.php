@@ -88,6 +88,17 @@ class DatabaseManager extends BaseDatabaseService implements DatabaseServiceInte
         }
 
         //==============================================================================
+        //  Read List of Available Users
+        $Users = $this->getEntityManager( $Site )->getRepository("OsPosBundle:OsposEmployees")->findAll();
+        $UsersChoices   =   array();
+        foreach ($Users as $User) {
+            if ($User->getDeleted()) {
+                continue;
+            } 
+            $UsersChoices[$User->getUsername()]    =   $User->getPerson()->getPersonId();
+        }
+        
+        //==============================================================================
         //  Read List of Available Warehouses
         $Warehouses = $this->getEntityManager( $Site )->getRepository("OsPosBundle:OsposStockLocations")->findAll();
         $WareHouseChoices   =   array();
@@ -96,7 +107,7 @@ class DatabaseManager extends BaseDatabaseService implements DatabaseServiceInte
                 continue;
             } 
             $WareHouseChoices[$Warehouse->getLocationName()]    =   $Warehouse->getLocationId();
-        }
+        }        
         
         //==============================================================================
         //  Populate WebSite Form
@@ -105,6 +116,20 @@ class DatabaseManager extends BaseDatabaseService implements DatabaseServiceInte
         $formMapper
                 
             ->tab('OsPos Options') 
+                
+                ->with('Users Config.', array('class' => 'col-md-6'))
+                
+                    ->add('splash_user', 'choice', array(
+                        'property_path'         => 'settings[splash_user]',
+                        'choices'               => $UsersChoices,                        
+                        'required'              => True,
+                        'label'                 => "OsPos User for WebService",
+                        'translation_domain'    => False,
+                        'label_render'          => False,
+                    ))
+
+                ->end()      
+                
                 ->with('Products Config.', array('class' => 'col-md-6'))
                 
                     ->add('items_default_category', 'text', array(
@@ -124,7 +149,8 @@ class DatabaseManager extends BaseDatabaseService implements DatabaseServiceInte
                         'label_render'          => False,
                     ))                
                 
-                ->end()      
+                ->end()                  
+                
             ->end()
                 
             ;

@@ -29,9 +29,9 @@ class OsposStockLocations
     /**
      * @var integer
      *
-     * @ORM\Column(name="location_id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
+     * @ORM\Column(name="location_id", type="integer")
      */
     private $locationId;
 

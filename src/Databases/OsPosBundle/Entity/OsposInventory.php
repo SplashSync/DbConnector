@@ -52,24 +52,34 @@ class OsposInventory
      */
     private $transItems;
 
+//    /**
+//     * @var \Databases\OsPosBundle\Entity\OsposEmployees
+//     *
+//     * @ORM\ManyToOne(targetEntity="Databases\OsPosBundle\Entity\OsposEmployees")
+//     * @ORM\JoinColumns({
+//     *   @ORM\JoinColumn(name="trans_user", referencedColumnName="person_id")
+//     * })
+//     */
     /**
-     * @var \Databases\OsPosBundle\Entity\OsposEmployees
+     * @var int
      *
-     * @ORM\ManyToOne(targetEntity="Databases\OsPosBundle\Entity\OsposEmployees")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="trans_user", referencedColumnName="person_id")
-     * })
+     * @ORM\Column(name="trans_user", type="integer")
      */
     private $transUser;
 
+//    /**
+//     * @var \Databases\OsPosBundle\Entity\OsposStockLocations
+//     *
+//     * @ORM\ManyToOne(targetEntity="Databases\OsPosBundle\Entity\OsposStockLocations")
+//     * @ORM\JoinColumns({
+//     *   @ORM\JoinColumn(name="trans_location", referencedColumnName="location_id")
+//     * })
+//     */
     /**
-     * @var \Databases\OsPosBundle\Entity\OsposStockLocations
+     * @var int
      *
-     * @ORM\ManyToOne(targetEntity="Databases\OsPosBundle\Entity\OsposStockLocations")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="trans_location", referencedColumnName="location_id")
-     * })
-     */
+     * @ORM\Column(name="trans_location", type="integer")
+     */    
     private $transLocation;
 
 
@@ -183,11 +193,11 @@ class OsposInventory
     /**
      * Set transUser
      *
-     * @param \Databases\OsPosBundle\Entity\OsposEmployees $transUser
+     * @param int $transUser
      *
      * @return OsposInventory
      */
-    public function setTransUser(\Databases\OsPosBundle\Entity\OsposEmployees $transUser = null)
+    public function setTransUser( int $transUser)
     {
         $this->transUser = $transUser;
 
@@ -197,7 +207,7 @@ class OsposInventory
     /**
      * Get transUser
      *
-     * @return \Databases\OsPosBundle\Entity\OsposEmployees
+     * @return int
      */
     public function getTransUser()
     {
@@ -207,11 +217,11 @@ class OsposInventory
     /**
      * Set transLocation
      *
-     * @param \Databases\OsPosBundle\Entity\OsposStockLocations $transLocation
+     * @param int $transLocation
      *
      * @return OsposInventory
      */
-    public function setTransLocation(\Databases\OsPosBundle\Entity\OsposStockLocations $transLocation = null)
+    public function setTransLocation( int $transLocation )
     {
         $this->transLocation = $transLocation;
 
@@ -221,10 +231,58 @@ class OsposInventory
     /**
      * Get transLocation
      *
-     * @return \Databases\OsPosBundle\Entity\OsposStockLocations
+     * @return int
      */
     public function getTransLocation()
     {
         return $this->transLocation;
     }
+    
+//    /**
+//     * Set transUser
+//     *
+//     * @param \Databases\OsPosBundle\Entity\OsposEmployees $transUser
+//     *
+//     * @return OsposInventory
+//     */
+//    public function setTransUser(\Databases\OsPosBundle\Entity\OsposEmployees $transUser = null)
+//    {
+//        $this->transUser = $transUser;
+//
+//        return $this;
+//    }
+//
+//    /**
+//     * Get transUser
+//     *
+//     * @return \Databases\OsPosBundle\Entity\OsposEmployees
+//     */
+//    public function getTransUser()
+//    {
+//        return $this->transUser;
+//    }
+//
+//    /**
+//     * Set transLocation
+//     *
+//     * @param \Databases\OsPosBundle\Entity\OsposStockLocations $transLocation
+//     *
+//     * @return OsposInventory
+//     */
+//    public function setTransLocation(\Databases\OsPosBundle\Entity\OsposStockLocations $transLocation = null)
+//    {
+//        $this->transLocation = $transLocation;
+//
+//        return $this;
+//    }
+//
+//    /**
+//     * Get transLocation
+//     *
+//     * @return \Databases\OsPosBundle\Entity\OsposStockLocations
+//     */
+//    public function getTransLocation()
+//    {
+//        return $this->transLocation;
+//    }
 }
